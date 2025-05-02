@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>Menu Quán Ăn (Kitchen Summary Styled)</title>
+    <title>Restaurant Menu (Kitchen Summary Styled)</title>
     <style>
-        /* === Biến CSS và Reset === */
+        /* === CSS Variables and Reset === */
         :root {
              --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             --primary-color: #0073e6;
@@ -17,10 +17,10 @@
             --success-darker: #1e7e34;
             --danger-color: #dc3545;
             --danger-darker: #c82333;
-            --warning-light-bg: #fff0c1; /* Vàng nhạt */
+            --warning-light-bg: #fff0c1;
             --warning-light-text: #594200;
             --warning-light-hover: #ffe69c;
-            --warning-border-color: #ffda6a; /* Vàng viền */
+            --warning-border-color: #ffda6a;
             --light-gray: #f8f9fa;
             --medium-gray: #dee2e6;
             --dark-gray: #495057;
@@ -38,10 +38,18 @@
             --float-button-hover-bg: var(--primary-darker);
             --category-title-bg: #198754;
             --category-title-text: white;
+
+            /* --- Added color vars for noodle buttons --- */
+            --primary-light-bg: #e7f1ff;
+            --primary-light-border: #b3d7ff;
+            --primary-light-text: #004a99;
+            --primary-lighter-hover-bg: #d0e2f5;
         }
         *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { font-family: var(--font-family-base); line-height: 1.6; margin: 0; background-color: var(--light-gray); color: var(--text-color); position: relative; }
-        body.modal-open { overflow: hidden; }
+        body { overflow: auto !important; }
+        body.modal-open { overflow: hidden !important; }
         .container { max-width: 1200px; margin: auto; padding: calc(var(--spacing-unit) * 1.5); }
 
         .container > h1 { text-align: center; font-weight: 700; margin-bottom: calc(var(--spacing-unit) * 2); font-size: 2.2em; }
@@ -49,9 +57,17 @@
         #menu-section > h2, #order-section > h2 { text-align: center; border-bottom: none; margin-bottom: var(--spacing-unit); }
         h3 { margin: 0; padding: 0; font-size: 1.05em; line-height: 1.4; font-weight: normal; }
         h4 { font-size: 1.4em; font-weight: 600; margin-top: 0; margin-bottom: calc(var(--spacing-unit)*0.8); }
+        /* --- Updated modal h4 styles --- */
+        .modal-content h4 {
+            font-size: 1.3em;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 8px; /* Reduced padding */
+            margin-bottom: calc(var(--spacing-unit) * 0.8); /* Reduced margin */
+            text-align: center;
+        }
         .menu-order-container { display: flex; flex-wrap: wrap; gap: calc(var(--spacing-unit) * 2); }
         #menu-section { flex: 2; min-width: 250px; }
-        #order-section { flex: 1; min-width: 320px; background-color: var(--card-bg); padding: var(--spacing-unit); border-radius: var(--border-radius); box-shadow: var(--card-shadow); align-self: flex-start; position: sticky; top: 20px; border: 1px solid var(--card-border-color); }
+        #order-section { flex: 1; min-width: 320px; background-color: var(--card-bg); padding: var(--spacing-unit); border-radius: var(--border-radius); box-shadow: var(--card-shadow); align-self: flex-start; position: sticky; top: 20px; border: 1px solid var(--card-border-color); scroll-margin-top: 20px; }
         #menu { width: 100%; }
         .menu-category-title { font-size: 1.3em; font-weight: 600; line-height: 1.5; text-align: center; color: var(--category-title-text); padding: calc(var(--spacing-unit) * 0.8) var(--spacing-unit); background-color: var(--category-title-bg); border-radius: var(--border-radius); box-shadow: 0 2px 5px rgba(25, 135, 84, 0.3); border-bottom: none; margin-top: calc(var(--spacing-unit) * 2.5); margin-bottom: calc(var(--spacing-unit) * 1.5); }
         .menu-category-title:first-of-type { margin-top: 0; }
@@ -61,18 +77,34 @@
         .menu-item-card img { width: 100%; height: 250px; object-fit: cover; display: block; border-bottom: 1px solid var(--card-border-color); background-color: #e9ecef; }
         .menu-item-info { padding: var(--spacing-unit); flex-grow: 1; display: flex; flex-direction: column; position: relative; }
         .menu-item-name-wrapper { margin-bottom: 5px; display: flex; align-items: flex-start; flex-wrap: wrap; }
-        .menu-item-name-wrapper h3 { flex-grow: 1; margin-right: 5px; }
-        .en-name { font-weight: 600; color: var(--text-color); margin-right: 0.4em; }
-        .vn-name { font-weight: 400; font-size: 0.9em; color: var(--dark-gray); }
+        .en-name { font-weight: 600; color: var(--text-color); margin-right: 0.4em; flex-grow: 1; font-size: 1.05em; line-height: 1.4;}
         .spicy-icon { margin-left: 5px; font-size: 0.9em; display: inline-block; vertical-align: middle; }
         .info-icon { display: inline-block; background: none; border: none; padding: 2px 5px; margin-left: auto; font-size: 0.75em; font-weight: 600; color: var(--primary-color); cursor: pointer; text-decoration: none; border-radius: 4px; transition: color 0.2s ease, text-decoration 0.2s ease, background-color 0.2s ease; flex-shrink: 0; align-self: center; }
         .info-icon:hover, .info-icon:focus-visible { color: var(--primary-darker); text-decoration: underline; background-color: #e7f1ff; }
         .info-icon:focus-visible { outline: 1px dotted var(--primary-color); outline-offset: 2px; }
         .menu-item-details { margin-top: 5px; }
         .menu-item-info .price { font-weight: 700; font-size: 1.15em; color: var(--primary-color); margin-bottom: calc(var(--spacing-unit) * 0.5); display: block; }
-        .noodle-choice-indicator, .noodle-choice-explanation { font-size: 0.8em; font-style: italic; color: var(--dark-gray); display: block; }
-        .noodle-choice-indicator { margin-bottom: 2px; margin-top: -5px; }
-        .noodle-choice-explanation { margin-bottom: calc(var(--spacing-unit) * 0.8); font-size: 0.75em; font-style: normal; }
+
+        /* Indicator Style */
+        .customization-available-indicator {
+            font-size: 0.85em;
+            font-style: normal;
+            font-weight: 500;
+            color: var(--primary-color);
+            display: inline-block;
+            margin-bottom: 5px;
+            margin-top: -2px;
+            line-height: 1.3;
+            padding: 2px 0px;
+        }
+        .noodle-choice-explanation {
+             margin-bottom: calc(var(--spacing-unit) * 0.8);
+             font-size: 0.75em;
+             font-style: normal;
+             color: var(--dark-gray);
+             display: block;
+        }
+
         .quantity-selector { display: flex; align-items: center; margin-bottom: var(--spacing-unit); }
         .quantity-selector button { width: 32px; height: 32px; padding: 0; font-size: 1.5em; line-height: 1; border: 1px solid var(--medium-gray); background-color: var(--light-gray); color: var(--dark-gray); cursor: pointer; border-radius: 5px; transition: background-color 0.15s ease, border-color 0.15s ease; }
         .quantity-selector button:hover { background-color: #e2e6ea; }
@@ -98,38 +130,29 @@
         .order-empty-message { text-align: center; color: var(--dark-gray); padding: calc(var(--spacing-unit) * 2) var(--spacing-unit); font-style: italic; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: calc(100% - 30px); }
         #order-items li { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px dotted var(--card-border-color); font-size: 0.95em; }
         #order-items li:last-child { border-bottom: none; }
-        #order-items li span:first-child { flex-grow: 1; margin-right: 10px; line-height: 1.4; font-weight: 500; }
-        #order-items li .order-qty-controls { display: flex; align-items: center; margin: 0 8px; }
+        #order-items li .item-name-display { flex-grow: 1; margin-right: 10px; line-height: 1.4; font-weight: 500; }
+        #order-items li .item-customization-note { font-size: 0.8em; color: var(--dark-gray); display: block; margin-top: 1px; line-height: 1.2; font-style: italic; }
+        #order-items li .order-qty-controls { display: flex; align-items: center; margin: 0 8px; flex-shrink: 0; }
         #order-items li .order-qty-controls button { width: 26px; height: 26px; padding: 0; font-size: 1.2em; line-height: 1; background-color: #f1f3f5; border: 1px solid var(--medium-gray); color: var(--dark-gray); border-radius: 4px; cursor: pointer; margin: 0 5px; transition: background-color 0.15s ease; }
         #order-items li .order-qty-controls button:hover { background-color: #e2e6ea; }
         #order-items li .order-qty-controls button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 1px; }
         #order-items li .order-qty-controls .quantity { min-width: 25px; text-align: center; font-weight: 600; font-size: 1.05em; }
-        #order-items li .item-total-price { min-width: 85px; text-align: right; font-weight: 600; color: var(--dark-gray); margin: 0 8px; }
-        #order-items li .remove-item { background-color: transparent; color: var(--danger-color); border: 1px solid transparent; width: 28px; height: 28px; padding: 0; font-size: 1.3em; font-weight: bold; line-height: 1; border-radius: 50%; cursor: pointer; transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; display: flex; align-items: center; justify-content: center; }
+        #order-items li .item-total-price { min-width: 85px; text-align: right; font-weight: 600; color: var(--dark-gray); margin: 0 8px; flex-shrink: 0; }
+        #order-items li .remove-item { background-color: transparent; color: var(--danger-color); border: 1px solid transparent; width: 28px; height: 28px; padding: 0; font-size: 1.3em; font-weight: bold; line-height: 1; border-radius: 50%; cursor: pointer; transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #order-items li .remove-item:hover { background-color: #fdf0f1; border-color: var(--danger-color); }
         #order-items li .remove-item:focus-visible { outline: 2px solid var(--danger-color); outline-offset: 1px; background-color: #fdf0f1; border-color: var(--danger-color); }
         #order-total { margin-top: calc(var(--spacing-unit) * 1.5); }
         #order-total p { text-align: right; font-size: 1.25em; font-weight: 600; margin: var(--spacing-unit) 0; }
         #order-total p strong { color: var(--success-color); font-size: 1.1em; font-weight: 700; margin-left: 8px; }
 
-        /* === CẬP NHẬT MÀU NỀN/VIỀN YÊU CẦU BẾP === */
-        #kitchen-summary {
-            /* background-color: #f8f9fa; */ /* Màu cũ */
-            background-color: var(--warning-light-bg); /* Màu mới: vàng nhạt */
-            padding: var(--spacing-unit);
-            /* border: 1px solid var(--medium-gray); */ /* Viền cũ */
-            border: 1px solid var(--warning-border-color); /* Viền mới: vàng */
-            border-radius: var(--border-radius);
-            margin-top: var(--spacing-unit);
-            margin-bottom: calc(var(--spacing-unit) * 1.5);
-        }
-        /* === KẾT THÚC CẬP NHẬT === */
-
-        #kitchen-summary h3 { text-align: center; font-size: 1.2em; color: var(--text-color); margin-bottom: calc(var(--spacing-unit)*0.8); border-bottom: 1px solid var(--medium-gray); padding-bottom: 8px; }
-        #kitchen-items-list { list-style: none; padding: 0; margin: 0; }
-        #kitchen-items-list li { font-size: 1.1em; font-weight: 500; padding: 8px 5px; border-bottom: 1px dotted var(--medium-gray); }
+        #kitchen-summary { background-color: var(--warning-light-bg); padding: var(--spacing-unit); border: 1px solid var(--warning-border-color); border-radius: var(--border-radius); margin-top: var(--spacing-unit); margin-bottom: calc(var(--spacing-unit) * 1.5); }
+        #kitchen-summary h3 { text-align: center; font-size: 1.2em; color: var(--warning-light-text); margin-bottom: calc(var(--spacing-unit)*0.8); border-bottom: 1px solid var(--warning-border-color); padding-bottom: 8px; }
+        #kitchen-items-list { list-style: none; padding: 0; margin: 0; font-family: var(--font-family-base); }
+        #kitchen-items-list li { font-size: 1.05em; font-weight: 500; padding: 8px 5px; border-bottom: 1px dotted var(--warning-border-color); color: var(--warning-light-text);}
         #kitchen-items-list li:last-child { border-bottom: none; }
         #kitchen-items-list li strong { font-weight: 700; margin-right: 10px; display: inline-block; min-width: 30px; text-align: right; }
+        #kitchen-items-list li .kitchen-customization-note { font-size: 0.9em; color: var(--danger-darker); display: block; margin-left: 40px; margin-top: 3px; font-style: italic; }
+
         #order-notes-container { margin-top: var(--spacing-unit); margin-bottom: calc(var(--spacing-unit) * 1.5); }
         #order-notes-container label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark-gray); font-size: 0.95em; }
         #order-notes { width: 100%; padding: 10px; border: 1px solid var(--medium-gray); border-radius: 5px; font-size: 0.95em; line-height: 1.5; resize: vertical; }
@@ -159,9 +182,11 @@
         #view-order-float-button.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
         #view-order-float-button .order-count { background-color: rgba(255, 255, 255, 0.2); padding: 2px 6px; border-radius: 10px; font-size: 0.9em; min-width: 20px; text-align: center; font-weight: bold; }
         #view-order-float-button svg { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; }
+
+        /* === Modal Styling === */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--modal-overlay-bg); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1000; padding: var(--spacing-unit); }
         .modal-overlay.visible { opacity: 1; visibility: visible; }
-        .modal-content { background-color: var(--card-bg); padding: calc(var(--spacing-unit) * 1.8); border-radius: var(--border-radius); box-shadow: 0 5px 20px rgba(0,0,0,0.2); max-width: 550px; width: 95%; position: relative; transform: scale(0.95); transition: transform 0.3s ease; max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-content { background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: 0 5px 20px rgba(0,0,0,0.2); max-width: 550px; width: 95%; position: relative; transform: scale(0.95); transition: transform 0.3s ease; max-height: 90vh; display: flex; flex-direction: column; }
         .modal-overlay.visible .modal-content { transform: scale(1); }
         .modal-close { position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 2.2em; line-height: 1; color: var(--medium-gray); cursor: pointer; padding: 0; transition: color 0.2s ease; z-index: 10; }
         .modal-close:hover { color: var(--dark-gray); }
@@ -174,18 +199,75 @@
         #modal-noodle-options { font-size: 0.9em; text-align: center; border-top: 1px solid var(--card-border-color); border-bottom: 1px solid var(--card-border-color); padding: calc(var(--spacing-unit)*0.8) 0; }
         #modal-noodle-options strong { display: block; font-weight: 600; margin-bottom: 5px; color: var(--dark-gray); }
         #modal-noodle-options ul { list-style: none; padding: 0; margin: 0; }
-        #modal-noodle-options li { display: inline-block; margin: 0 8px; color: var(--text-color); }
-        #modal-noodle-options li .noodle-opt-desc { font-size: 0.9em; color: var(--dark-gray); }
+        #modal-noodle-options li { display: block; margin: 4px 8px; color: var(--text-color); line-height: 1.5; } /* Updated display/margin */
         #modal-item-description { font-size: 0.95em; line-height: 1.7; color: var(--dark-gray); margin-top: 0; flex-grow: 1; overflow-y: auto; padding-right: 10px; }
-        #noodle-choice-modal .modal-content { max-width: 400px; display: block; flex-direction: unset; max-height: none; }
-        #noodle-choice-modal h4 { text-align: center; font-size: 1.3em; border-bottom: 1px solid var(--medium-gray); padding-bottom: 10px; margin-bottom: var(--spacing-unit); }
-        .noodle-options { display: flex; justify-content: space-around; gap: 10px; flex-wrap: wrap; }
-        .noodle-option { text-align: center; margin-bottom: 5px; }
-        .noodle-option button { background-color: var(--light-gray); border: 1px solid var(--medium-gray); color: var(--primary-color); padding: 12px 18px; border-radius: var(--border-radius); cursor: pointer; font-size: 1.0em; font-weight: 500; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease; min-width: 90px; line-height: 1.4; white-space: normal; text-align: center; }
-        .noodle-option button:hover { background-color: #e9ecef; border-color: var(--dark-gray); }
-        .noodle-option button:active { transform: scale(0.97); }
-        .noodle-option button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-        .noodle-desc { display: none; }
+
+        /* === Customization Modal Specific Styles === */
+        /* --- Updated padding --- */
+        #customization-modal .modal-content {
+            max-width: 450px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: calc(var(--spacing-unit) * 1.5); /* Reduced overall padding */
+        }
+        /* --- Updated section spacing --- */
+        .modal-options-section {
+            margin-bottom: calc(var(--spacing-unit) * 0.8); /* Reduced margin */
+            padding-bottom: calc(var(--spacing-unit) * 0.8); /* Reduced padding */
+            border-bottom: 1px dashed var(--medium-gray);
+        }
+        /* --- Updated noodle section spacing --- */
+        #customization-noodle-section {
+             margin-bottom: calc(var(--spacing-unit) * 0.8); /* Match general section margin */
+             padding-bottom: calc(var(--spacing-unit) * 0.5); /* Reduced padding */
+        }
+        .modal-options-section:last-of-type {
+             border-bottom: none;
+             margin-bottom: 0;
+             padding-bottom: 70px; /* Keep space for sticky button */
+        }
+        /* --- Updated h5 spacing --- */
+        .modal-options-section h5 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: calc(var(--spacing-unit) * 0.5); /* Reduced margin */
+            color: var(--dark-gray);
+        }
+
+        /* --- Updated noodle button gap --- */
+        .noodle-options-modal {
+            display: flex;
+            gap: 10px; /* Reduced gap */
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        /* Noodle Button Styles (No change from previous) */
+        .noodle-option-modal button { background-color: var(--primary-light-bg); border: 1px solid var(--primary-light-border); color: var(--primary-light-text); padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.95em; font-weight: 500; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; line-height: 1.4; white-space: nowrap; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .noodle-option-modal button:hover:not(.selected) { background-color: var(--primary-lighter-hover-bg); border-color: var(--primary-color); color: var(--primary-darker); transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .noodle-option-modal button:active { transform: scale(0.97) translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition-duration: 0.05s; }
+        .noodle-option-modal button.selected { background-color: var(--primary-color); color: white; border-color: var(--primary-darker); font-weight: 600; box-shadow: 0 2px 5px rgba(0, 115, 230, 0.3); transform: none; }
+        .noodle-option-modal button.selected:hover { background-color: var(--primary-darker); border-color: #004085; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 115, 230, 0.3); }
+
+        /* --- Updated checkbox list spacing --- */
+        .customization-options-list { list-style: none; padding: 0; margin: 0; }
+        .customization-options-list li {
+            margin-bottom: calc(var(--spacing-unit) * 0.4); /* Reduced margin */
+        }
+        .checkbox-label { display: flex; align-items: center; cursor: pointer; font-size: 0.95em; }
+        .checkbox-label input[type="checkbox"] { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-label .option-name-en { font-weight: 500; }
+
+        /* Sticky Confirm Button */
+        #confirm-customization-button {
+            width: 100%; padding: 12px; font-size: 1.1em; font-weight: 600; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.15s ease, transform 0.1s ease;
+            position: sticky; bottom: 0; left: 0;
+            background-color: var(--card-bg); /* Added background */
+            padding-top: 10px; padding-bottom: calc(var(--spacing-unit) * 1); margin-top: auto; border-top: 1px solid var(--medium-gray); z-index: 1;
+            background-color: var(--success-color); /* Default color */
+        }
+        #confirm-customization-button:hover { background-color: var(--success-darker); }
+        #confirm-customization-button:active { transform: scale(0.98); background-color: var(--success-darker); }
+        #confirm-customization-button:disabled { background-color: var(--medium-gray); cursor: not-allowed; color: var(--dark-gray); border-top-color: var(--medium-gray); box-shadow: none; }
 
         /* === RESPONSIVE === */
         @media (max-width: 992px) {
@@ -195,21 +277,25 @@
              h2 { font-size: 1.4em; }
              .menu-category-title { font-size: 1.2em; padding: calc(var(--spacing-unit) * 0.6) var(--spacing-unit); }
              .modal-content { max-width: 90%; padding: calc(var(--spacing-unit) * 1.5); }
+              #customization-modal .modal-content { max-width: 85%; padding: calc(var(--spacing-unit) * 1.2); } /* Adjusted padding */
+              .modal-options-section:last-of-type { padding-bottom: 70px; }
              .menu-category-items { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
              .menu-item-card img { height: 250px; }
              #modal-item-name { font-size: 1.4em; }
              #modal-item-price { font-size: 1.15em; }
-             #modal-noodle-options li { display: block; margin: 4px 0;}
+             #modal-noodle-options li { margin: 4px 8px; }
              #modal-item-image { max-height: 220px; }
+             .noodle-option-modal button { font-size: 0.9em; padding: 8px 16px; }
+             .checkbox-label { font-size: 0.9em; }
+             .checkbox-label input[type="checkbox"] { width: 16px; height: 16px;}
+             #order-items li .item-customization-note { font-size: 0.75em; }
         }
         @media (max-width: 768px) {
              .menu-order-container { flex-direction: column; gap: var(--spacing-unit); }
-             #order-section { width: 100%; margin-top: 0; border: 1px solid var(--medium-gray); box-shadow: var(--card-shadow); position: static; }
+             #order-section { width: 100%; margin-top: 0; border: 1px solid var(--medium-gray); box-shadow: var(--card-shadow); position: static; scroll-margin-top: 0; }
              .menu-category-items { grid-template-columns: 1fr; gap: var(--spacing-unit); }
              .menu-item-card img { height: 220px; }
-             h3 { font-size: 1em; }
-             .en-name { margin-right: 0.3em; }
-             .vn-name { font-size: 0.85em; }
+             .en-name { font-size: 1em; }
              .menu-item-info .price { font-size: 1.1em; }
              .add-to-order-button { padding: 10px; font-size: 0.95em; }
              .add-to-order-button.item-in-order { padding-left: 12px; padding-right: 8px;}
@@ -217,86 +303,631 @@
              #kitchen-summary { margin-top: var(--spacing-unit); margin-bottom: var(--spacing-unit); }
              #kitchen-items-list li { font-size: 1em; }
              .modal-content { padding: var(--spacing-unit); }
+             #customization-modal .modal-content { padding: var(--spacing-unit); } /* Adjusted padding */
+             .modal-options-section:last-of-type { padding-bottom: 65px; }
              h4 { font-size: 1.2em;}
+             .modal-content h4 { font-size: 1.2em; margin-bottom: calc(var(--spacing-unit) * 0.6); } /* Adjusted margin */
              #modal-item-name { font-size: 1.3em; }
              #modal-item-price { font-size: 1.1em; }
              #modal-item-description { font-size: 0.9em; line-height: 1.6; }
              .modal-close { font-size: 2em; top: 5px; right: 10px;}
-             #noodle-choice-modal .modal-content {}
-             .noodle-options { flex-direction: column; align-items: stretch; gap: 8px; }
-             .noodle-option button { width: 100%; font-size: 1.0em; padding: 10px; }
+             .noodle-options-modal { flex-direction: column; align-items: stretch; gap: 8px; } /* Adjusted gap */
+             .noodle-option-modal button { width: 100%; font-size: 0.95em; padding: 10px; }
+             .checkbox-label { font-size: 0.9em; }
              #view-order-float-button { bottom: 15px; right: 15px; padding: 8px 12px; font-size: 0.85em; }
              #view-order-float-button svg { width: 18px; height: 18px; }
              .info-icon { font-size: 0.7em; }
-             #modal-item-image { max-height: 160px; } /* Giảm chiều cao ảnh modal trên mobile */
+             #modal-item-image { max-height: 160px; }
              #modal-noodle-options { font-size: 0.85em; padding: calc(var(--spacing-unit)*0.6) 0; }
-             #modal-noodle-options li { margin: 2px 0; }
+             #modal-noodle-options li { margin: 2px 8px; }
+             #order-items li .item-customization-note { font-size: 0.75em; margin-top: 0px;}
+             .modal-options-section h5 { margin-bottom: calc(var(--spacing-unit) * 0.4); } /* Adjusted margin */
+             .customization-options-list li { margin-bottom: calc(var(--spacing-unit) * 0.3); } /* Adjusted margin */
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Our Menu / Thực Đơn</h1>
+        <h1><b>Quyên Phở Gà</b><br>50 Phố Vọng</h1>
         <div class="menu-order-container">
-            <section id="menu-section"><h2>Menu</h2><div id="menu"></div></section>
-            <section id="order-section"><h2>Your Order / Món Đã Chọn</h2><div id="order-summary">
-                    <ul id="order-items"><li class="order-empty-message">Loading menu... / Đang tải thực đơn...</li></ul>
-                    <div id="kitchen-summary" class="hidden"><h3>Yêu cầu bếp</h3><ul id="kitchen-items-list"></ul></div>
-                    <div id="order-notes-container" class="hidden"><label for="order-notes">Notes / Ghi chú:</label><textarea id="order-notes" rows="3" placeholder="Any special requests? (e.g., no onions, less spicy) / Yêu cầu đặc biệt? (vd: không hành, ít cay)"></textarea></div>
-                    <div id="order-total"><p>Total / Tổng cộng: <strong id="total-cost">0 VND</strong></p></div>
-                    <button id="finish-eating" class="hidden">Finish Eating / Thanh Toán</button>
-            </div></section>
+            <section id="menu-section">
+                <h2><u>Menu</u></h2>
+                <div id="menu"></div>
+            </section>
+            <section id="order-section">
+                <h2>Your Order</h2>
+                <div id="order-summary">
+                    <ul id="order-items"><li class="order-empty-message">Your order is empty</li></ul>
+                    <div id="kitchen-summary" class="hidden">
+                        <h3><b>Yêu cầu bếp</b></h3>
+                        <ul id="kitchen-items-list"></ul>
+                    </div>
+                    <div id="order-notes-container" class="hidden">
+                        <label for="order-notes">Notes:</label>
+                        <textarea id="order-notes" rows="3" placeholder="Any special requests? (e.g., no onions, less spicy)"></textarea>
+                    </div>
+                    <div id="order-total">
+                        <p>Total: <strong id="total-cost">0 VND</strong></p>
+                    </div>
+                    <button id="finish-eating" class="hidden">Proceed to Payment</button>
+                </div>
+            </section>
         </div>
-        <div id="final-bill" class="hidden"><h2>Final Bill / Hóa Đơn</h2><ul id="bill-items"></ul><p id="bill-total-line">Total Amount / Tổng Thanh Toán: <strong id="bill-total">0 VND</strong></p><p id="thank-you-line">Thank you! / Cảm ơn!</p><button id="new-order">New Order / Order Mới</button></div>
+        <div id="final-bill" class="hidden">
+            <h2>Final Bill</h2>
+            <ul id="bill-items"></ul>
+            <p id="bill-total-line">Total Amount: <strong id="bill-total">0 VND</strong></p>
+            <p id="thank-you-line">Thank you!</p>
+            <button id="new-order">New Order</button>
+        </div>
     </div>
 
-    <div id="info-modal" class="modal-overlay hidden"> <div class="modal-content"> <button id="info-modal-close" class="modal-close" aria-label="Đóng">×</button> <img id="modal-item-image" src="" alt="Hình ảnh món ăn" loading="lazy" class="modal-section"> <h4 id="modal-item-name" class="modal-section">Item Name</h4> <p id="modal-item-price" class="modal-section"></p> <div id="modal-noodle-options" class="modal-section"></div> <div id="modal-item-description" class="modal-section">Description details...</div> </div> </div>
+    <div id="info-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="info-modal-close" class="modal-close" aria-label="Close">×</button>
+            <img id="modal-item-image" src="" alt="Menu item image" loading="lazy" class="modal-section">
+            <h4 id="modal-item-name" class="modal-section">Item Name</h4>
+            <p id="modal-item-price" class="modal-section"></p>
+            <div id="modal-noodle-options" class="modal-section"></div>
+            <div id="modal-item-description" class="modal-section">Description details...</div>
+        </div>
+    </div>
 
-    <div id="noodle-choice-modal" class="modal-overlay hidden">
-         <div class="modal-content noodle-choice-content">
-             <button id="noodle-modal-close" class="modal-close" aria-label="Đóng">×</button>
-             <h4>Choose Noodle Type:</h4>
-             <div class="noodle-options">
-                 <div class="noodle-option">
-                     <button data-noodle-type="Pho">Flat Rice Noodles (Pho)</button>
-                 </div>
-                 <div class="noodle-option">
-                     <button data-noodle-type="Mi">Egg Noodles (Mi)</button>
-                 </div>
-                 <div class="noodle-option">
-                     <button data-noodle-type="Mien">Glass Noodles (Mien)</button>
-                 </div>
+    <div id="customization-modal" class="modal-overlay hidden">
+         <div class="modal-content">
+             <button id="customization-modal-close" class="modal-close" aria-label="Close">×</button>
+             <h4 id="customization-item-name">Customize Item</h4>
+
+             <div id="customization-noodle-section" class="modal-options-section hidden">
+                 <h5>Choose Noodle Type:</h5>
+                 <div id="customization-noodle-options" class="noodle-options-modal"></div>
              </div>
-         </div>
-     </div>
 
-     <button id="view-order-float-button" class="hidden" aria-label="Xem đơn hàng"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.218,2.268L22,4.947V20.73A.27.27,0,0,1,21.729,21L12,17.269,2.271,21A.27.27,0,0,1,2,20.731V4.947L6.782,2.268A.27.27,0,0,1,7.053,2h9.894A.27.27,0,0,1,17.218,2.268ZM12,15.731,21,19.469V5.82L16.947,3.5H7.053L3,5.82V19.469Z"/><path d="M8,8.5a1,1,0,0,1,1-1h6a1,1,0,0,1,0,2H9A1,1,0,0,1,8,8.5Z"/><path d="M8,12.5a1,1,0,0,1,1-1h6a1,1,0,0,1,0,2H9A1,1,0,0,1,8,12.5Z"/></svg><span class="order-count">0</span></button>
+              <div id="customization-ingredient-section" class="modal-options-section hidden">
+                  <h5>Options:</h5>
+                  <ul id="customization-ingredient-options" class="customization-options-list"></ul>
+               </div>
+              <button id="confirm-customization-button" disabled>Confirm & Add</button>
+         </div>
+    </div>
+
+     <button id="view-order-float-button" class="hidden" aria-label="View order">
+         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.218,2.268L22,4.947V20.73A.27.27,0,0,1,21.729,21L12,17.269,2.271,21A.27.27,0,0,1,2,20.731V4.947L6.782,2.268A.27.27,0,0,1,7.053,2h9.894A.27.27,0,0,1,17.218,2.268ZM12,15.731,21,19.469V5.82L16.947,3.5H7.053L3,5.82V19.469Z"/><path d="M8,8.5a1,1,0,0,1,1-1h6a1,1,0,0,1,0,2H9A1,1,0,0,1,8,8.5Z"/><path d="M8,12.5a1,1,0,0,1,1-1h6a1,1,0,0,1,0,2H9A1,1,0,0,1,8,12.5Z"/></svg>
+         <span class="order-count">0</span>
+     </button>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const noodleTypes = { Pho: { name: "Phở", vnName: "Phở", enName: "Pho", enDesc: "(Flat rice noodles)" }, Mi:  { name: "Mì",  vnName: "Mì",  enName: "Mi",  enDesc: "(Egg noodles)" }, Mien:{ name: "Miến",vnName: "Miến",enName: "Mien", enDesc: "(Glass noodles)" } };
-            const placeholderImageUrl = 'https://placehold.co/600x400/EEE/31343C?text=Món+Ăn&font=montserrat';
-            const menuData = [ /* ... Dữ liệu menu giữ nguyên ... */ { id: 'ga_nuoc', name: 'Chicken Noodle Soup (Phở/Mì/Miến Gà Nước)', vietnameseName: 'Gà Nước', price: 40000, image: 'https://inhat.vn/wp-content/uploads/2020/10/pho-ga-ngon-ha-noi-12.png', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Clear chicken broth simmered with spices, topped with boiled chicken slices or shreds, scallions, and fresh herbs. Served with your choice of noodles.' },{ id: 'ga_tron', name: 'Mixed Noodles with Chicken (Phở/Mì/Miến Gà Trộn)', vietnameseName: 'Gà Trộn', price: 45000, image: 'https://inhat.vn/wp-content/uploads/2020/10/pho-ga-ngon-ha-noi-4.jpg', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Your choice of noodles mixed with shredded chicken, roasted peanuts, crispy fried shallots, fresh herbs, and a tangy sweet & sour dressing. Served without broth.', isSpicy: true },{ id: 'ga_dui_nuoc', name: 'Chicken Thigh Noodle Soup (Phở/Mì/Miến Gà Đùi Nước)', vietnameseName: 'Gà Đùi Nước', price: 45000, image: 'https://inoxvietnam.vn/wp-content/uploads/2020/10/cach-nau-pho-ga-cong-thuc-nau-pho-ga-dam-da.jpg', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Flavorful noodle soup featuring tender, juicy chicken thigh meat in a clear chicken broth, scallions and herbs. Served with your choice of noodles.' },{ id: 'ga_dui_tron', name: 'Mixed Noodles with Chicken Thigh (Phở/Mì/Miến Gà Đùi Trộn)', vietnameseName: 'Gà Đùi Trộn', price: 50000, image: 'https://img-global.cpcdn.com/recipes/f4f38d29faf2d94f/1360x964cq70/ph%E1%BB%9F-ga-tr%E1%BB%99n-recipe-main-photo.webp', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'A refreshing mix of your choice of noodles with succulent chicken thigh meat, roasted peanuts, fried shallots, herbs, and a sweet & sour dressing.', isSpicy: true },{ id: 'bo_nuoc', name: 'Beef Noodle Soup (Phở/Mì/Miến Bò Nước)', vietnameseName: 'Bò Nước', price: 40000, image: 'https://cdn.eva.vn/upload/3-2020/images/2020-09-19/1600510801-photo-1-1600006283562691307317.jpg', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Rich beef broth simmered for hours, served with your choice of noodles and thinly sliced beef (select rare, well-done, flank, brisket, or mixed), onions, and herbs.' },{ id: 'bo_tron', name: 'Mixed Noodles with Beef (Phở/Mì/Miến Bò Trộn)', vietnameseName: 'Bò Trộn', price: 45000, image: 'https://cdn.tgdd.vn/Files/2017/04/20/974364/cach-lam-pho-tron-thit-bo-thom-ngon-la-mieng-10_760x833.jpg', category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Your choice of noodles tossed with savory stir-fried beef, roasted peanuts, fried shallots, fresh herbs, and a balanced sweet & sour dressing.', isSpicy: true },{ id: 'ga_bo_nuoc', name: 'Chicken & Beef Noodle Soup (Phở/Mì/Miến Gà Bò Nước)', vietnameseName: 'Gà Bò Nước', price: 45000, image: placeholderImageUrl, category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'A hearty combination of both tender chicken and sliced beef in our signature broth, served with your choice of noodles, onions, and herbs.' },{ id: 'ga_bo_tron', name: 'Mixed Noodles with Chicken & Beef (Phở/Mì/Miến Gà Bò Trộn)', vietnameseName: 'Gà Bò Trộn', price: 50000, image: placeholderImageUrl, category: 'Phở, Mì, Miến / Noodles', noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'The best of both worlds: mixed noodles featuring both shredded chicken and stir-fried beef, combined with peanuts, shallots, herbs, and dressing. Choose noodle type your noodle type.', isSpicy: true },{ id: 'mi_xao_bo', name: 'Stir-fried Noodles with Beef (Mì xào Bò)', vietnameseName: 'Mì xào Bò', price: 45000, image: 'https://nghebep.com/wp-content/uploads/2017/10/mon-mi-xao-bo.jpg', category: 'Mì Xào / Stir-fried Noodles', description: 'Classic stir-fried egg noodles with tender beef slices, bok choy, onions, carrots, and savory sauce.', isSpicy: true },{ id: 'mi_xao_tim', name: 'Stir-fried Noodles with Pork Heart (Mì xào Tim)', vietnameseName: 'Mì xào Tim', price: 45000, image: 'https://navicdn.com/nauankhongkho.com/wp-content/uploads/2016/05/143210948829-768x576.jpg', category: 'Mì Xào / Stir-fried Noodles', description: 'Stir-fried egg noodles featuring carefully prepared, thinly sliced pork heart mixed with assorted vegetables.', isSpicy: true },{ id: 'mi_xao_bau_duc', name: 'Stir-fried Noodles with Pork Kidney (Mì xào Bầu dục)', vietnameseName: 'Mì xào Bầu dục', price: 40000, image: 'https://kenh14cdn.com/203336854389633024/2025/2/22/dsc00215-17401680022842135927921-1740186568658-17401865703781702331045.jpg', category: 'Mì Xào / Stir-fried Noodles', description: 'Egg noodles stir-fried with meticulously cleaned and sliced pork kidney and various fresh vegetables.', isSpicy: true },{ id: 'mi_xao_tim_bau_duc', name: 'Stir-fried Noodles with Pork Heart & Kidney (Mì xào Tim bầu dục)', vietnameseName: 'Mì xào Tim bầu dục', price: 50000, image: 'https://bepphuongdong.com/images/2018/223/tim-cat-xao-thap-cam(1).jpg', category: 'Mì Xào / Stir-fried Noodles', description: 'A combination stir-fry featuring both sliced pork heart and kidney, served over egg noodles with vegetables.', isSpicy: true },{ id: 'chao_ga', name: 'Chicken Congee (Cháo Gà)', vietnameseName: 'Cháo Gà', price: 40000, image: placeholderImageUrl, category: 'Cháo / Congee', description: 'Comforting rice porridge slow-cooked in chicken broth, served topped with shredded chicken, scallions, black pepper, and optional herbs like perilla.' },{ id: 'chao_tim', name: 'Pork Heart Congee (Cháo Tim)', vietnameseName: 'Cháo Tim', price: 40000, image: 'https://static.vinwonders.com/production/chao-tim-cat-ha-noi-5.jpg', category: 'Cháo / Congee', description: 'Smooth rice porridge cooked with tender, thinly sliced pork heart.' },{ id: 'chao_tim_thit_bam', name: 'Pork Heart & Minced Meat Congee (Cháo Tim thịt băm)', vietnameseName: 'Cháo Tim thịt băm', price: 45000, image: placeholderImageUrl, category: 'Cháo / Congee', description: 'A richer version of congee combining both sliced pork heart and savory minced pork in rice porridge.' },{ id: 'chao_thit_bam', name: 'Minced Meat Congee (Cháo Thịt băm)', vietnameseName: 'Cháo Thịt băm', price: 35000, image: placeholderImageUrl, category: 'Cháo / Congee', description: 'Simple yet satisfying rice porridge cooked with seasoned minced pork, typically garnished with scallions and pepper.' },{ id: 'chao_bau_duc', name: 'Pork Kidney Congee (Cháo Bầu dục)', vietnameseName: 'Cháo Bầu dục', price: 40000, image: placeholderImageUrl, category: 'Cháo / Congee', description: 'Rice porridge featuring thinly sliced, well-cleaned pork kidney.' },{ id: 'chao_tim_bau_duc', name: 'Pork Heart & Kidney Congee (Cháo Tim bầu dục)', vietnameseName: 'Cháo Tim bầu dục', price: 45000, image: placeholderImageUrl, category: 'Cháo / Congee', description: 'A hearty rice porridge combining both sliced pork heart and kidney.' },{ id: 'tra_da', name: 'Iced Tea (Trà đá)', vietnameseName: 'Trà đá', price: 5000, image: 'https://i-ngoisao.vnecdn.net/2024/06/20/Tra-Da-Ha-Noi-6-8716-1718883996.jpg', category: 'Đồ uống / Beverages', description: 'Refreshing Vietnamese-style plain iced tea, usually brewed from green or black tea.' },{ id: 'tra_chanh', name: 'Lemon Iced Tea (Trà chanh)', vietnameseName: 'Trà chanh', price: 15000, image: 'https://bizweb.dktcdn.net/100/421/036/files/cach-lam-tra-chanh-kim-quat-3a3bbf56-6659-4db6-bf54-d2bbbfab21cf.jpg?v=1638608737566', category: 'Đồ uống / Beverages', description: 'Classic iced tea sweetened and mixed with fresh lemon juice.' },{ id: 'tra_quat', name: 'Kumquat Iced Tea (Trà quất)', vietnameseName: 'Trà quất', price: 15000, image: 'https://hunufa.vn/wp-content/uploads/2025/02/ly-tra-tac-khong-lo-1.webp', category: 'Đồ uống / Beverages', description: 'Iced tea infused with the unique sweet, sour, and aromatic flavor of kumquat juice.' },{ id: 'tra_chanh_leo', name: 'Passion Fruit Iced Tea (Trà chanh leo)', vietnameseName: 'Trà chanh leo', price: 15000, image: 'https://horecavn.com/wp-content/uploads/2024/05/luc-tra-chanh-day-ly-500ml_20240527104903.png', category: 'Đồ uống / Beverages', description: 'Tropical iced tea blended with tangy passion fruit juice and sweetener.' },{ id: 'nuoc_ngot', name: 'Soft Drink / Soda (Nước ngọt)', vietnameseName: 'Nước ngọt', price: 15000, image: 'https://bizweb.dktcdn.net/100/436/111/products/coca-2.png?v=1703986211787', category: 'Đồ uống / Beverages', description: 'Selection of popular canned or bottled soft drinks (e.g., Coke, Pepsi, Sprite, 7up).' },{ id: 'bo_huc', name: 'Energy Drink (Bò húc)', vietnameseName: 'Bò húc', price: 15000, image: 'https://cdn-images.kiotviet.vn/batraifarm/96ae25e2eb294e99b8823adf2d3d75ad.jpg', category: 'Đồ uống / Beverages', description: 'Canned energy drink like Red Bull or similar local brands.' },];
-            let currentOrder = {}; let tempOrderItem = null;
-            const menuDiv = document.getElementById('menu'); const orderItemsUl = document.getElementById('order-items'); const totalCostSpan = document.getElementById('total-cost'); const finishEatingButton = document.getElementById('finish-eating'); const finalBillDiv = document.getElementById('final-bill'); const billItemsUl = document.getElementById('bill-items'); const billTotalSpan = document.getElementById('bill-total'); const newOrderButton = document.getElementById('new-order'); const menuSection = document.getElementById('menu-section'); const orderSection = document.getElementById('order-section'); const kitchenSummaryDiv = document.getElementById('kitchen-summary'); const kitchenItemsListUl = document.getElementById('kitchen-items-list'); const orderNotesContainer = document.getElementById('order-notes-container'); const orderNotesTextarea = document.getElementById('order-notes'); const infoModal = document.getElementById('info-modal'); const infoModalContent = infoModal?.querySelector('.modal-content'); const infoModalCloseButton = document.getElementById('info-modal-close'); const modalItemName = document.getElementById('modal-item-name'); const modalItemDescription = document.getElementById('modal-item-description'); const modalItemImage = document.getElementById('modal-item-image'); const modalItemPrice = document.getElementById('modal-item-price'); const modalNoodleOptionsDiv = document.getElementById('modal-noodle-options'); const noodleChoiceModal = document.getElementById('noodle-choice-modal'); const noodleChoiceModalContent = noodleChoiceModal?.querySelector('.modal-content'); const noodleModalCloseButton = document.getElementById('noodle-modal-close'); const noodleOptionsContainer = noodleChoiceModal?.querySelector('.noodle-options'); const viewOrderFloatButton = document.getElementById('view-order-float-button'); const viewOrderCountSpan = viewOrderFloatButton?.querySelector('.order-count');
-            function formatCurrency(amount) { return amount.toLocaleString('vi-VN') + ' VND'; }
-            function displayMenu() { if (!menuDiv) return; menuDiv.innerHTML = ''; const groupedMenu = menuData.reduce((acc, item) => { item.description = item.description || ''; const category = item.category || 'Khác / Others'; if (!acc[category]) acc[category] = []; acc[category].push(item); return acc; }, {}); for (const categoryName in groupedMenu) { const categoryTitle = document.createElement('h2'); categoryTitle.classList.add('menu-category-title'); categoryTitle.textContent = categoryName; menuDiv.appendChild(categoryTitle); const categoryItemsContainer = document.createElement('div'); categoryItemsContainer.classList.add('menu-category-items'); menuDiv.appendChild(categoryItemsContainer); groupedMenu[categoryName].forEach(item => { const card = document.createElement('div'); card.classList.add('menu-item-card'); card.dataset.id = item.id; const imgSrc = item.image || placeholderImageUrl; const imgAlt = item.name; const imgHTML = `<img src="${imgSrc}" alt="${imgAlt}" loading="lazy" onerror="this.onerror=null; this.src='${placeholderImageUrl}'; console.warn('Failed to load image, using placeholder: ${imgSrc}')">`; let enName = item.name; let vnName = ''; const nameParts = item.name.split(' ('); if (nameParts.length > 1) { enName = nameParts[0].trim(); vnName = '(' + nameParts[1]; } const spicyIconHTML = item.isSpicy ? '<span class="spicy-icon" aria-label="Spicy">🌶️</span>' : ''; let noodleInfoHTML = ''; if (item.noodleOptions && item.noodleOptions.length > 0) { noodleInfoHTML = `<span class="noodle-choice-indicator">(Choose noodle type)</span><small class="noodle-choice-explanation">(Choice required upon adding)</small>`; } const infoButtonHTML = `<button class="info-icon" data-id="${item.id}" title="Chi tiết món ăn" aria-label="Chi tiết món ${enName}">Details</button>`; card.innerHTML = `${imgHTML}<div class="menu-item-info"><div class="menu-item-name-wrapper"><h3><span class="en-name">${enName}</span>${vnName ? `<span class="vn-name">${vnName}</span>` : ''}${spicyIconHTML}</h3>${infoButtonHTML}</div><div class="menu-item-details"><span class="price">${formatCurrency(item.price)}</span>${noodleInfoHTML}</div><div class="quantity-selector"><button class="qty-decrease" data-id="${item.id}" aria-label="Decrease quantity">-</button><input type="number" class="qty-input" value="1" min="1" data-id="${item.id}" aria-label="Quantity"><button class="qty-increase" data-id="${item.id}" aria-label="Increase quantity">+</button></div><button class="add-to-order-button" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">Add to Order</button></div>`; categoryItemsContainer.appendChild(card); }); } }
-            function updateOrderSummary() { if (!orderItemsUl || !kitchenItemsListUl || !kitchenSummaryDiv || !totalCostSpan || !orderNotesContainer || !finishEatingButton || !viewOrderFloatButton || !viewOrderCountSpan) { console.error("Missing one or more order summary/float button elements."); return; } orderItemsUl.innerHTML = ''; kitchenItemsListUl.innerHTML = ''; let total = 0; let itemCount = 0; let distinctItemCount = 0; const sortedItemIds = Object.keys(currentOrder).sort(); sortedItemIds.forEach(orderItemId => { const item = currentOrder[orderItemId]; if (item.quantity > 0) { itemCount += item.quantity; distinctItemCount++; const listItem = document.createElement('li'); const displayName = item.specificName || item.name; listItem.innerHTML = `<span>${displayName}</span><div class="order-qty-controls"><button class="order-decrease-qty" data-id="${orderItemId}" aria-label="Decrease quantity">-</button><span class="quantity" aria-label="Current quantity">${item.quantity}</span><button class="order-increase-qty" data-id="${orderItemId}" aria-label="Increase quantity">+</button></div><span class="item-total-price">${formatCurrency(item.price * item.quantity)}</span><button class="remove-item" data-id="${orderItemId}" aria-label="Remove item">X</button>`; orderItemsUl.appendChild(listItem); total += item.price * item.quantity; const kitchenListItem = document.createElement('li'); const vietnameseName = item.specificVietnameseName || item.vietnameseName || item.name; kitchenListItem.innerHTML = `<strong>${item.quantity}</strong> x ${vietnameseName}`; kitchenItemsListUl.appendChild(kitchenListItem); } else { delete currentOrder[orderItemId]; } }); totalCostSpan.textContent = formatCurrency(total); const isEmpty = distinctItemCount === 0; finishEatingButton.classList.toggle('hidden', isEmpty); kitchenSummaryDiv.classList.toggle('hidden', isEmpty); orderNotesContainer.classList.toggle('hidden', isEmpty); if (isEmpty) { viewOrderFloatButton.classList.add('hidden'); } else { viewOrderFloatButton.classList.remove('hidden'); viewOrderCountSpan.textContent = distinctItemCount; } const existingEmptyMsg = orderItemsUl.querySelector('.order-empty-message'); if (isEmpty && !existingEmptyMsg) { const emptyMsg = document.createElement('li'); emptyMsg.classList.add('order-empty-message'); emptyMsg.textContent = 'Your order is empty / Chưa chọn món nào'; orderItemsUl.appendChild(emptyMsg); } else if (!isEmpty && existingEmptyMsg) { existingEmptyMsg.remove(); } if (menuDiv) { const allMenuCards = menuDiv.querySelectorAll('.menu-item-card'); allMenuCards.forEach(card => { const baseItemId = card.dataset.id; const addButton = card.querySelector('.add-to-order-button'); if (addButton) { let isInOrder = !!currentOrder[baseItemId]; if (!isInOrder) { isInOrder = Object.keys(currentOrder).some(orderKey => orderKey.startsWith(baseItemId + '_') && currentOrder[orderKey].quantity > 0); } addButton.classList.toggle('item-in-order', isInOrder); if (isInOrder) { addButton.innerHTML = `<span>In Cart ✓</span><span class="remove-from-menu" data-remove-id="${baseItemId}" title="Remove all from cart" aria-label="Remove all ${addButton.dataset.name} from cart">✖</span>`; } else { addButton.innerHTML = 'Add to Order'; } } }); } }
-            function showConfirmation(buttonElement) { const parentInfo = buttonElement.closest('.menu-item-info'); if (!parentInfo) return; const existingConfirmation = parentInfo.querySelector('.add-confirmation'); if (existingConfirmation) existingConfirmation.remove(); const confirmation = document.createElement('span'); confirmation.classList.add('add-confirmation'); confirmation.textContent = '✓ Added!'; parentInfo.appendChild(confirmation); requestAnimationFrame(() => { requestAnimationFrame(() => { confirmation.classList.add('show'); }); }); setTimeout(() => { confirmation.classList.remove('show'); setTimeout(() => { if(confirmation.parentNode) confirmation.remove(); }, 400); }, 1500); }
-            function getVariationDetails(baseItemId, baseName, baseVnName, noodleTypeKey) { const noodleInfo = noodleTypes[noodleTypeKey]; if (!noodleInfo) return null; const specificId = `${baseItemId}_${noodleTypeKey.toLowerCase()}`; const specificVietnameseName = `${noodleInfo.vnName} ${baseVnName || ''}`.trim(); const baseEnNameMatch = baseName.match(/^(.*?)\s*\(/); const baseEnName = baseEnNameMatch ? baseEnNameMatch[1].trim() : baseName; const specificName = `${baseEnName} ${noodleInfo.name} (${specificVietnameseName})`; return { id: specificId, name: specificName, vietnameseName: specificVietnameseName }; }
-            function openInfoModal(itemId) { if (!infoModal || !modalItemName || !modalItemDescription || !modalItemImage || !modalItemPrice || !modalNoodleOptionsDiv) { console.error("Info modal elements not found!"); return; } const itemData = menuData.find(item => item.id === itemId); if (itemData) { const name = itemData.name; const description = itemData.description || 'No description available.'; const price = itemData.price; const imageUrl = itemData.image || placeholderImageUrl; let englishName = name; const nameParts = name.split(' ('); if (nameParts.length > 1) { englishName = nameParts[0].trim(); } modalItemName.textContent = englishName; modalItemDescription.innerHTML = description.replace(/\n/g, '<br>'); modalItemPrice.textContent = formatCurrency(price); modalItemImage.src = imageUrl; modalItemImage.alt = englishName; if (itemData.noodleOptions && itemData.noodleOptions.length > 0) { let noodleOptionsHTML = '<strong>Noodle Options:</strong><ul>'; itemData.noodleOptions.forEach(key => { const noodleInfo = noodleTypes[key]; if (noodleInfo) { noodleOptionsHTML += `<li>${noodleInfo.enName} <span class="noodle-opt-desc">${noodleInfo.enDesc}</span></li>`; } }); noodleOptionsHTML += '</ul>'; modalNoodleOptionsDiv.innerHTML = noodleOptionsHTML; modalNoodleOptionsDiv.classList.remove('hidden'); } else { modalNoodleOptionsDiv.innerHTML = ''; modalNoodleOptionsDiv.classList.add('hidden'); } infoModal.classList.remove('hidden'); requestAnimationFrame(() => { infoModal.classList.add('visible'); document.body.classList.add('modal-open'); modalItemDescription.scrollTop = 0; }); } else { console.warn("Item data not found for ID:", itemId); modalItemName.textContent = "Error"; modalItemImage.src = placeholderImageUrl; modalItemImage.alt = "Error loading item"; modalItemPrice.textContent = ""; modalNoodleOptionsDiv.innerHTML = ''; modalNoodleOptionsDiv.classList.add('hidden'); modalItemDescription.innerHTML = "Item details could not be loaded."; infoModal.classList.remove('hidden'); requestAnimationFrame(() => { infoModal.classList.add('visible'); document.body.classList.add('modal-open'); }); } }
-            function closeInfoModal() { if (!infoModal) return; infoModal.classList.remove('visible'); document.body.classList.remove('modal-open'); setTimeout(() => { infoModal.classList.add('hidden'); }, 300); }
-            function openNoodleChoiceModal(itemId, quantity, originalButton) { if (!noodleChoiceModal || !noodleOptionsContainer) return; const itemData = menuData.find(item => item.id === itemId); if (!itemData || !itemData.noodleOptions) return; tempOrderItem = { baseItemId: itemId, baseName: itemData.name, baseVnName: itemData.vietnameseName, price: itemData.price, quantity: quantity, originalButton: originalButton, description: itemData.description || '' }; noodleChoiceModal.classList.remove('hidden'); requestAnimationFrame(() => { noodleChoiceModal.classList.add('visible'); document.body.classList.add('modal-open'); }); }
-            function closeNoodleChoiceModal() { if (!noodleChoiceModal) return; noodleChoiceModal.classList.remove('visible'); document.body.classList.remove('modal-open'); setTimeout(() => { noodleChoiceModal.classList.add('hidden'); }, 300); tempOrderItem = null; }
-            document.body.addEventListener('click', (event) => { const target = event.target; const infoButton = target.closest('.info-icon'); if (infoButton) { const infoItemId = infoButton.dataset.id; if(infoItemId) { openInfoModal(infoItemId); return; } } if (target === infoModalCloseButton || (target === infoModal && !infoModalContent?.contains(target))) { closeInfoModal(); return; } if (target === noodleModalCloseButton || (target === noodleChoiceModal && !noodleChoiceModalContent?.contains(target))) { closeNoodleChoiceModal(); return; } const noodleButton = target.closest('.noodle-option button'); if (noodleButton) { const noodleTypeKey = noodleButton.dataset.noodleType; if (tempOrderItem && noodleTypeKey) { const variationDetails = getVariationDetails(tempOrderItem.baseItemId, tempOrderItem.baseName, tempOrderItem.baseVnName, noodleTypeKey); if (variationDetails) { const { id: specificId, name: specificName, vietnameseName: specificVietnameseName } = variationDetails; if (currentOrder[specificId]) { currentOrder[specificId].quantity += tempOrderItem.quantity; } else { currentOrder[specificId] = { baseId: tempOrderItem.baseItemId, baseName: tempOrderItem.baseName, baseVietnameseName: tempOrderItem.baseVnName, name: specificName, vietnameseName: specificVietnameseName, price: tempOrderItem.price, quantity: tempOrderItem.quantity, description: tempOrderItem.description }; } updateOrderSummary(); showConfirmation(tempOrderItem.originalButton); } closeNoodleChoiceModal(); } return; } if (target.matches('.remove-from-menu')) { const baseItemIdToRemove = target.dataset.removeId; if (baseItemIdToRemove) { Object.keys(currentOrder).forEach(orderKey => { if (orderKey === baseItemIdToRemove || orderKey.startsWith(baseItemIdToRemove + '_')) { delete currentOrder[orderKey]; } }); updateOrderSummary(); const card = target.closest('.menu-item-card'); const input = card?.querySelector('.qty-input'); if(input) input.value = 1; } return; } const card = target.closest('.menu-item-card'); const orderItemLi = target.closest('#order-items li'); if (card) { const itemId = card.dataset.id; const input = card.querySelector(`.qty-input[data-id="${itemId}"]`); let currentVal = input ? parseInt(input.value) : 1; if (isNaN(currentVal) || currentVal < 1) currentVal = 1; if (target.classList.contains('qty-decrease')) { if (currentVal > 1 && input) input.value = currentVal - 1; } else if (target.classList.contains('qty-increase')) { if (input) input.value = currentVal + 1; } else if (target.classList.contains('add-to-order-button') && !target.classList.contains('item-in-order')) { const quantityToAdd = input ? parseInt(input.value) : 1; const itemData = menuData.find(item => item.id === itemId); if (itemData && quantityToAdd > 0) { if (itemData.noodleOptions && itemData.noodleOptions.length > 0) { openNoodleChoiceModal(itemId, quantityToAdd, target); } else { const price = itemData.price; if (!isNaN(price)) { if (currentOrder[itemId]) { currentOrder[itemId].quantity += quantityToAdd; } else { currentOrder[itemId] = { name: itemData.name, vietnameseName: itemData.vietnameseName, price: price, quantity: quantityToAdd, description: itemData.description || '' }; } if (input) input.value = 1; updateOrderSummary(); showConfirmation(target); } } } } } else if (orderItemLi) { const orderItemId = target.closest('[data-id]')?.dataset.id; if (!orderItemId || !currentOrder[orderItemId]) return; if (target.classList.contains('order-decrease-qty')) { currentOrder[orderItemId].quantity--; if (currentOrder[orderItemId].quantity <= 0) { delete currentOrder[orderItemId]; } updateOrderSummary(); } else if (target.classList.contains('order-increase-qty')) { currentOrder[orderItemId].quantity++; updateOrderSummary(); } else if (target.classList.contains('remove-item')) { delete currentOrder[orderItemId]; updateOrderSummary(); } } else if (target.id === 'finish-eating') { handleFinishEating(); } else if (target.id === 'new-order') { handleNewOrder(); } });
-            if (viewOrderFloatButton) { /* ... Giữ nguyên ... */ viewOrderFloatButton.addEventListener('click', () => { const orderSectionElement = document.getElementById('order-section'); if (orderSectionElement) { orderSectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }); }
-            document.addEventListener('keydown', (event) => { /* ... Giữ nguyên ... */ if (event.key === 'Escape') { if (infoModal?.classList.contains('visible')) closeInfoModal(); if (noodleChoiceModal?.classList.contains('visible')) closeNoodleChoiceModal(); } });
-            document.body.addEventListener('change', (event) => { /* ... Giữ nguyên ... */ const target = event.target; if (target.classList.contains('qty-input')) { let value = parseInt(target.value); if (isNaN(value) || value < 1) { target.value = 1; } } });
-            function handleFinishEating() { /* ... Giữ nguyên ... */ if (!menuSection || !orderSection || !finalBillDiv || !billItemsUl || !billTotalSpan) return; menuSection.classList.add('hidden'); orderSection.classList.add('hidden'); finalBillDiv.classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); billItemsUl.innerHTML = ''; let billTotal = 0; const sortedItemIds = Object.keys(currentOrder).sort(); sortedItemIds.forEach(orderItemId => { const item = currentOrder[orderItemId]; if (item.quantity > 0) { const billListItem = document.createElement('li'); const displayName = item.name; billListItem.innerHTML = `<span>${item.quantity} x ${displayName}</span><span>${formatCurrency(item.price * item.quantity)}</span>`; billItemsUl.appendChild(billListItem); billTotal += item.price * item.quantity; } }); if(billTotalSpan) billTotalSpan.textContent = formatCurrency(billTotal); }
-            function handleNewOrder() { /* ... Giữ nguyên ... */ if (!finalBillDiv || !menuSection || !orderSection) return; currentOrder = {}; finalBillDiv.classList.add('hidden'); menuSection.classList.remove('hidden'); orderSection.classList.remove('hidden'); const qtyInputs = document.querySelectorAll('.qty-input'); if (qtyInputs.length > 0) { qtyInputs.forEach(input => input.value = 1); } if(orderNotesTextarea) orderNotesTextarea.value = ''; updateOrderSummary(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-            function initializeApp() { /* ... Giữ nguyên ... */ const essentialElements = [menuDiv, orderItemsUl, totalCostSpan, finishEatingButton, finalBillDiv, billItemsUl, billTotalSpan, newOrderButton, menuSection, orderSection, kitchenSummaryDiv, kitchenItemsListUl, orderNotesContainer, orderNotesTextarea, infoModal, modalItemName, modalItemDescription, modalItemImage, modalItemPrice, modalNoodleOptionsDiv, infoModalCloseButton, noodleChoiceModal, noodleModalCloseButton, noodleOptionsContainer, viewOrderFloatButton, viewOrderCountSpan]; let allElementsExist = true; for (const el of essentialElements) { if (!el) { console.error("Initialization failed: Essential HTML element is missing. Check IDs in HTML and JS.", el); allElementsExist = false; break; } } if (allElementsExist) { try { displayMenu(); updateOrderSummary(); } catch (error) { console.error("Error during initialization:", error); const container = document.querySelector('.container'); if(container) container.innerHTML = "<h1>Lỗi tải trang. Vui lòng thử lại. (Error loading page. Please try again.)</h1><p>Details in console.</p>"; } } else { const container = document.querySelector('.container'); if(container) container.innerHTML = "<h1>Lỗi tải trang. Vui lòng thử lại. (Error loading page. Please try again.)</h1><p>Essential element missing. Check console.</p>"; } }
+            // --- Noodle Types ---
+             const noodleTypes = {
+                 Pho: { name: "Pho", enName: "Flat Rice Noodles", vnName: "Phở", enDesc: "(Flat rice noodles)", id: "pho" },
+                 Mi:  { name: "Mi",  enName: "Egg Noodles", vnName: "Mì", enDesc: "(Egg noodles)", id: "mi" },
+                 Mien:{ name: "Mien",enName: "Glass Noodles", vnName: "Miến", enDesc: "(Glass noodles)", id: "mien" }
+             };
+            const placeholderImageUrl = 'https://placehold.co/600x400/EEE/31343C?text=Food+Item&font=montserrat';
 
-            initializeApp();
+            // --- Menu Data ---
+            const menuData = [ // Dữ liệu menu không đổi
+                 {
+                    id: 'ga_nuoc', name: 'Chicken Noodle Soup', vietnameseName: 'Phở Gà Nước', price: 40000, image: 'https://inhat.vn/wp-content/uploads/2020/10/pho-ga-ngon-ha-noi-12.png', category: 'Noodles',
+                    noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Clear chicken broth simmered with spices, topped with boiled chicken slices or shreds, scallions, and fresh herbs. Served with your choice of noodles.',
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_bean_sprouts', name_en: 'No Bean Sprouts', name_vi: 'Không Giá Đỗ', default_state: false }
+                    ] } ]
+                 },
+                 {
+                    id: 'ga_tron', name: 'Mixed Noodles with Chicken', vietnameseName: 'Phở Gà Trộn', price: 45000, image: 'https://inhat.vn/wp-content/uploads/2020/10/pho-ga-ngon-ha-noi-4.jpg', category: 'Noodles',
+                    noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Your choice of noodles mixed with shredded chicken, roasted peanuts, crispy fried shallots, fresh herbs, and a tangy sweet & sour dressing. Served without broth.', isSpicy: true,
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_peanuts', name_en: 'No Peanuts', name_vi: 'Không Lạc', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                    ] } ]
+                 },
+                  {
+                     id: 'ga_dui_nuoc', name: 'Chicken Thigh Noodle Soup', vietnameseName: 'Phở Đùi Gà Nước', price: 45000, image: 'https://inoxvietnam.vn/wp-content/uploads/2020/10/cach-nau-pho-ga-cong-thuc-nau-pho-ga-dam-da.jpg', category: 'Noodles',
+                     noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Flavorful noodle soup featuring tender, juicy chicken thigh meat in a clear chicken broth, scallions and herbs. Served with your choice of noodles.',
+                     customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_bean_sprouts', name_en: 'No Bean Sprouts', name_vi: 'Không Giá Đỗ', default_state: false }
+                     ] } ]
+                  },
+                  {
+                     id: 'ga_dui_tron', name: 'Mixed Noodles with Chicken Thigh', vietnameseName: 'Phở Đùi Gà Trộn', price: 50000, image: 'https://img-global.cpcdn.com/recipes/f4f38d29faf2d94f/1360x964cq70/ph%E1%BB%9F-ga-tr%E1%BB%99n-recipe-main-photo.webp', category: 'Noodles',
+                     noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'A refreshing mix of your choice of noodles with succulent chicken thigh meat, roasted peanuts, fried shallots, herbs, and a sweet & sour dressing.', isSpicy: true,
+                      customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_peanuts', name_en: 'No Peanuts', name_vi: 'Không Lạc', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                      ] } ]
+                  },
+                  {
+                     id: 'bo_nuoc', name: 'Beef Noodle Soup', vietnameseName: 'Phở Bò Nước', price: 40000, image: 'https://cdn.eva.vn/upload/3-2020/images/2020-09-19/1600510801-photo-1-1600006283562691307317.jpg', category: 'Noodles',
+                     noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Rich beef broth simmered for hours, served with your choice of noodles and thinly sliced beef, onions, and herbs.',
+                     customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_bean_sprouts', name_en: 'No Bean Sprouts', name_vi: 'Không Giá Đỗ', default_state: false }
+                     ] } ]
+                  },
+                  {
+                     id: 'bo_tron', name: 'Mixed Noodles with Beef', vietnameseName: 'Phở Bò Trộn', price: 45000, image: 'https://cdn.tgdd.vn/Files/2017/04/20/974364/cach-lam-pho-tron-thit-bo-thom-ngon-la-mieng-10_760x833.jpg', category: 'Noodles',
+                     noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'Your choice of noodles tossed with savory stir-fried beef, roasted peanuts, fried shallots, fresh herbs, and a balanced sweet & sour dressing.', isSpicy: true,
+                     customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_peanuts', name_en: 'No Peanuts', name_vi: 'Không Lạc', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                     ] } ]
+                  },
+                   {
+                       id: 'ga_bo_nuoc', name: 'Chicken & Beef Noodle Soup', vietnameseName: 'Phở Gà Bò Nước', price: 45000, image: placeholderImageUrl, category: 'Noodles',
+                       noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'A hearty combination of both tender chicken and sliced beef in our signature broth, served with your choice of noodles, onions, and herbs.',
+                       customizations: [ { type: 'ingredient_options', options: [
+                            { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                            { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                            { id: 'no_bean_sprouts', name_en: 'No Bean Sprouts', name_vi: 'Không Giá Đỗ', default_state: false }
+                       ] } ]
+                   },
+                   {
+                       id: 'ga_bo_tron', name: 'Mixed Noodles with Chicken & Beef', vietnameseName: 'Phở Gà Bò Trộn', price: 50000, image: placeholderImageUrl, category: 'Noodles',
+                       noodleOptions: ['Pho', 'Mi', 'Mien'], description: 'The best of both worlds: mixed noodles featuring both shredded chicken and stir-fried beef, combined with peanuts, shallots, herbs, and dressing.', isSpicy: true,
+                       customizations: [ { type: 'ingredient_options', options: [
+                            { id: 'no_scallions', name_en: 'No Scallions/Onions', name_vi: 'Không Hành/Hành Tây', default_state: false },
+                            { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                            { id: 'no_peanuts', name_en: 'No Peanuts', name_vi: 'Không Lạc', default_state: false },
+                            { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                       ] } ]
+                   },
+                 {
+                    id: 'mi_xao_bo', name: 'Stir-fried Noodles with Beef', vietnameseName: 'Mì Xào Bò', price: 45000, image: 'https://nghebep.com/wp-content/uploads/2017/10/mon-mi-xao-bo.jpg', category: 'Stir-fried Noodles', description: 'Classic stir-fried egg noodles with tender beef slices, bok choy, onions, carrots, and savory sauce.', isSpicy: true,
+                    customizations: [ { type: 'ingredient_options', options: [ { id: 'no_onions', name_en: 'No Onions', name_vi: 'Không Hành Tây', default_state: false } ] } ]
+                 },
+                 {
+                    id: 'mi_xao_tim', name: 'Stir-fried Noodles with Pork Heart', vietnameseName: 'Mì Xào Tim Heo', price: 45000, image: 'https://navicdn.com/nauankhongkho.com/wp-content/uploads/2016/05/143210948829-768x576.jpg', category: 'Stir-fried Noodles', description: 'Stir-fried egg noodles featuring carefully prepared, thinly sliced pork heart mixed with assorted vegetables.', isSpicy: true,
+                     customizations: [ { type: 'ingredient_options', options: [ { id: 'no_onions', name_en: 'No Onions', name_vi: 'Không Hành Tây', default_state: false } ] } ]
+                 },
+                 {
+                    id: 'mi_xao_bau_duc', name: 'Stir-fried Noodles with Pork Kidney', vietnameseName: 'Mì Xào Cật Heo', price: 40000, image: 'https://kenh14cdn.com/203336854389633024/2025/2/22/dsc00215-17401680022842135927921-1740186568658-17401865703781702331045.jpg', category: 'Stir-fried Noodles', description: 'Egg noodles stir-fried with meticulously cleaned and sliced pork kidney and various fresh vegetables.', isSpicy: true,
+                     customizations: [ { type: 'ingredient_options', options: [ { id: 'no_onions', name_en: 'No Onions', name_vi: 'Không Hành Tây', default_state: false } ] } ]
+                 },
+                 {
+                    id: 'mi_xao_tim_bau_duc', name: 'Stir-fried Noodles with Pork Heart & Kidney', vietnameseName: 'Mì Xào Tim Cật', price: 50000, image: 'https://bepphuongdong.com/images/2018/223/tim-cat-xao-thap-cam(1).jpg', category: 'Stir-fried Noodles', description: 'A combination stir-fry featuring both sliced pork heart and kidney, served over egg noodles with vegetables.', isSpicy: true,
+                    customizations: [ { type: 'ingredient_options', options: [ { id: 'no_onions', name_en: 'No Onions', name_vi: 'Không Hành Tây', default_state: false } ] } ]
+                 },
+                 {
+                    id: 'chao_ga', name: 'Chicken Congee', vietnameseName: 'Cháo Gà', price: 40000, image: placeholderImageUrl, category: 'Congee', description: 'Comforting rice porridge slow-cooked in chicken broth, served topped with shredded chicken, scallions, black pepper, and optional herbs like perilla.',
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                    ] } ]
+                 },
+                 {
+                    id: 'chao_tim', name: 'Pork Heart Congee', vietnameseName: 'Cháo Tim', price: 40000, image: 'https://static.vinwonders.com/production/chao-tim-cat-ha-noi-5.jpg', category: 'Congee', description: 'Smooth rice porridge cooked with tender, thinly sliced pork heart.',
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                    ] } ]
+                 },
+                 {
+                    id: 'chao_tim_thit_bam', name: 'Pork Heart & Minced Meat Congee', vietnameseName: 'Cháo Tim Thịt Băm', price: 45000, image: placeholderImageUrl, category: 'Congee', description: 'A richer version of congee combining both sliced pork heart and savory minced pork in rice porridge.',
+                     customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                     ] } ]
+                 },
+                 {
+                    id: 'chao_thit_bam', name: 'Minced Meat Congee', vietnameseName: 'Cháo Thịt Băm', price: 35000, image: placeholderImageUrl, category: 'Congee', description: 'Simple yet satisfying rice porridge cooked with seasoned minced pork, typically garnished with scallions and pepper.',
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                    ] } ]
+                 },
+                 {
+                    id: 'chao_bau_duc', name: 'Pork Kidney Congee', vietnameseName: 'Cháo Cật Heo', price: 40000, image: placeholderImageUrl, category: 'Congee', description: 'Rice porridge featuring thinly sliced, well-cleaned pork kidney.',
+                    customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                    ] } ]
+                 },
+                 {
+                    id: 'chao_tim_bau_duc', name: 'Pork Heart & Kidney Congee', vietnameseName: 'Cháo Tim Cật', price: 45000, image: placeholderImageUrl, category: 'Congee', description: 'A hearty rice porridge combining both sliced pork heart and kidney.',
+                     customizations: [ { type: 'ingredient_options', options: [
+                        { id: 'no_scallions', name_en: 'No Scallions', name_vi: 'Không Hành Lá', default_state: false },
+                        { id: 'no_herbs', name_en: 'No Herbs', name_vi: 'Không Rau Thơm', default_state: false },
+                        { id: 'no_pepper', name_en: 'No Pepper', name_vi: 'Không Tiêu', default_state: false },
+                        { id: 'no_fried_shallots', name_en: 'No Fried Shallots', name_vi: 'Không Hành Phi', default_state: false }
+                     ] } ]
+                 },
+                 // --- Beverages ---
+                 { id: 'tra_da', name: 'Iced Tea', vietnameseName: 'Trà Đá', price: 5000, image: 'https://i-ngoisao.vnecdn.net/2024/06/20/Tra-Da-Ha-Noi-6-8716-1718883996.jpg', category: 'Beverages', description: 'Refreshing Vietnamese-style plain iced tea, usually brewed from green or black tea.' },
+                 { id: 'tra_chanh', name: 'Lemon Iced Tea', vietnameseName: 'Trà Chanh', price: 15000, image: 'https://bizweb.dktcdn.net/100/421/036/files/cach-lam-tra-chanh-kim-quat-3a3bbf56-6659-4db6-bf54-d2bbbfab21cf.jpg?v=1638608737566', category: 'Beverages', description: 'Classic iced tea sweetened and mixed with fresh lemon juice.' },
+                 { id: 'tra_quat', name: 'Kumquat Iced Tea', vietnameseName: 'Trà Tắc', price: 15000, image: 'https://hunufa.vn/wp-content/uploads/2025/02/ly-tra-tac-khong-lo-1.webp', category: 'Beverages', description: 'Iced tea infused with the unique sweet, sour, and aromatic flavor of kumquat juice.' },
+                 { id: 'tra_chanh_leo', name: 'Passion Fruit Iced Tea', vietnameseName: 'Trà Chanh Leo', price: 15000, image: 'https://horecavn.com/wp-content/uploads/2024/05/luc-tra-chanh-day-ly-500ml_20240527104903.png', category: 'Beverages', description: 'Tropical iced tea blended with tangy passion fruit juice and sweetener.' },
+                 { id: 'nuoc_ngot', name: 'Soft Drink / Soda', vietnameseName: 'Nước Ngọt', price: 15000, image: 'https://bizweb.dktcdn.net/100/436/111/products/coca-2.png?v=1703986211787', category: 'Beverages', description: 'Selection of popular canned or bottled soft drinks (e.g., Coke, Pepsi, Sprite, 7up).' },
+                 { id: 'bo_huc', name: 'Energy Drink', vietnameseName: 'Nước Tăng Lực', price: 15000, image: 'https://cdn-images.kiotviet.vn/batraifarm/96ae25e2eb294e99b8823adf2d3d75ad.jpg', category: 'Beverages', description: 'Canned energy drink like Red Bull or similar local brands.' },
+            ];
+            // --- End of menuData ---
+
+            let currentOrder = {};
+            let tempCustomizationItem = null;
+            let selectedNoodleType = null;
+
+            // --- DOM Element Selection (No changes needed) ---
+            const menuDiv = document.getElementById('menu');
+            const orderItemsUl = document.getElementById('order-items');
+            const totalCostSpan = document.getElementById('total-cost');
+            // ... (rest of DOM selections are unchanged) ...
+             const viewOrderFloatButton = document.getElementById('view-order-float-button');
+             const viewOrderCountSpan = viewOrderFloatButton?.querySelector('.order-count');
+             const kitchenSummaryDiv = document.getElementById('kitchen-summary');
+             const kitchenItemsListUl = document.getElementById('kitchen-items-list');
+             const orderNotesContainer = document.getElementById('order-notes-container');
+             const orderNotesTextarea = document.getElementById('order-notes');
+             const finalBillDiv = document.getElementById('final-bill');
+             const billItemsUl = document.getElementById('bill-items');
+             const billTotalSpan = document.getElementById('bill-total');
+             const newOrderButton = document.getElementById('new-order');
+             const menuSection = document.getElementById('menu-section');
+             const orderSection = document.getElementById('order-section');
+             const customizationModal = document.getElementById('customization-modal');
+             const customizationModalContent = customizationModal?.querySelector('.modal-content');
+             const customizationModalCloseButton = document.getElementById('customization-modal-close');
+             const customizationItemNameHeading = document.getElementById('customization-item-name');
+             const customizationNoodleSection = document.getElementById('customization-noodle-section');
+             const customizationNoodleOptionsDiv = document.getElementById('customization-noodle-options');
+             const customizationIngredientSection = document.getElementById('customization-ingredient-section');
+             const customizationIngredientOptionsUl = document.getElementById('customization-ingredient-options');
+             const confirmCustomizationButton = document.getElementById('confirm-customization-button');
+             const infoModal = document.getElementById('info-modal');
+             const infoModalContent = infoModal?.querySelector('.modal-content');
+             const infoModalCloseButton = document.getElementById('info-modal-close');
+             const modalItemName = document.getElementById('modal-item-name');
+             const modalItemDescription = document.getElementById('modal-item-description');
+             const modalItemImage = document.getElementById('modal-item-image');
+             const modalItemPrice = document.getElementById('modal-item-price');
+             const modalNoodleOptionsDiv = document.getElementById('modal-noodle-options');
+             const finishEatingButton = document.getElementById('finish-eating'); // Added missing definition
+
+            // --- Helper Functions (No changes needed) ---
+            function formatCurrency(amount) { return amount.toLocaleString('vi-VN') + ' VND'; }
+
+            // --- Display Menu (Includes latest indicator logic) ---
+            function displayMenu() {
+                if (!menuDiv) return;
+                menuDiv.innerHTML = '';
+                const groupedMenu = menuData.reduce((acc, item) => {
+                    item.description = item.description || '';
+                    const category = item.category || 'Others';
+                    if (!acc[category]) acc[category] = [];
+                    acc[category].push(item);
+                    return acc;
+                }, {});
+
+                for (const categoryName in groupedMenu) {
+                    const categoryTitle = document.createElement('h2');
+                    categoryTitle.classList.add('menu-category-title');
+                    categoryTitle.textContent = categoryName;
+                    menuDiv.appendChild(categoryTitle);
+
+                    const categoryItemsContainer = document.createElement('div');
+                    categoryItemsContainer.classList.add('menu-category-items');
+                    menuDiv.appendChild(categoryItemsContainer);
+
+                    groupedMenu[categoryName].forEach(item => {
+                        const card = document.createElement('div');
+                        card.classList.add('menu-item-card');
+                        card.dataset.id = item.id;
+
+                        const imgSrc = item.image || placeholderImageUrl;
+                        const imgAlt = item.name;
+                        const imgHTML = `<img src="${imgSrc}" alt="${imgAlt}" loading="lazy" onerror="this.onerror=null; this.src='${placeholderImageUrl}'; console.warn('Failed to load image, using placeholder: ${imgSrc}')">`;
+
+                        const enName = item.name;
+                        const spicyIconHTML = item.isSpicy ? '<span class="spicy-icon" aria-label="Spicy">🌶️</span>' : '';
+
+                        // === START: More Specific Options Indicator Logic ===
+                        let optionsIndicatorHTML = '';
+                        const needsNoodleChoice = item.noodleOptions && item.noodleOptions.length > 0;
+                        const hasIngredientOptions = item.customizations?.some(c => c.type === 'ingredient_options' && c.options?.length > 0);
+
+                        if (needsNoodleChoice && hasIngredientOptions) {
+                            optionsIndicatorHTML = `<span class="customization-available-indicator">Choose Noodle & Options after adding</span>`;
+                        } else if (needsNoodleChoice) {
+                            optionsIndicatorHTML = `<span class="customization-available-indicator">Choose Noodle after adding</span>`;
+                        } else if (hasIngredientOptions) {
+                            optionsIndicatorHTML = `<span class="customization-available-indicator">Choose Options after adding</span>`;
+                        }
+                        // === END: More Specific Options Indicator Logic ===
+
+                        const infoButtonHTML = `<button class="info-icon" data-id="${item.id}" title="View Details" aria-label="Details for ${enName}">Details</button>`;
+
+                        // --- Ensure no stray comments are here ---
+                        card.innerHTML = `
+                            ${imgHTML}
+                            <div class="menu-item-info">
+                                <div class="menu-item-name-wrapper">
+                                    <span class="en-name">${enName}${spicyIconHTML}</span>
+                                    ${infoButtonHTML}
+                                </div>
+                                <div class="menu-item-details">
+                                    <span class="price">${formatCurrency(item.price)}</span>
+                                    ${optionsIndicatorHTML}
+                                </div>
+                                <div class="quantity-selector">
+                                    <button class="qty-decrease" data-id="${item.id}" aria-label="Decrease quantity">-</button>
+                                    <input type="number" class="qty-input" value="1" min="1" data-id="${item.id}" aria-label="Quantity">
+                                    <button class="qty-increase" data-id="${item.id}" aria-label="Increase quantity">+</button>
+                                </div>
+                                <button class="add-to-order-button" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">Add to Order</button>
+                            </div>`;
+                        categoryItemsContainer.appendChild(card);
+                    });
+                }
+            }
+
+            // --- Update Order Summary & Kitchen Summary (No changes needed) ---
+             function updateOrderSummary() { /* ... function code remains the same ... */
+                  if (!orderItemsUl || !kitchenItemsListUl || !kitchenSummaryDiv || !totalCostSpan || !orderNotesContainer || !finishEatingButton || !viewOrderFloatButton || !viewOrderCountSpan) { return; }
+                  orderItemsUl.innerHTML = '';
+                  kitchenItemsListUl.innerHTML = '';
+                  let total = 0;
+                  let itemCount = 0;
+                  let distinctItemCount = 0;
+                  const sortedItemIds = Object.keys(currentOrder).sort();
+                  sortedItemIds.forEach(orderItemId => {
+                      const item = currentOrder[orderItemId];
+                      if (item.quantity > 0) {
+                          itemCount += item.quantity;
+                          distinctItemCount++;
+                          const listItem = document.createElement('li');
+                          const kitchenListItem = document.createElement('li');
+                          const originalItemData = menuData.find(menuItem => menuItem.id === item.baseId);
+                          let displayEnName = item.specificName || item.name;
+                          let customizationNoteEn = '';
+                          if (item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0) {
+                              const notesEn = Object.values(item.selectedCustomizations).map(cust => cust.name_en);
+                              customizationNoteEn = `(${notesEn.join(', ')})`;
+                          }
+                          let kitchenDisplayNameVi = originalItemData?.vietnameseName || item.name;
+                          let kitchenCustomizationNoteVi = '';
+                          if (item.selectedNoodle) {
+                              const noodleInfo = noodleTypes[Object.keys(noodleTypes).find(key => noodleTypes[key].id === item.selectedNoodle.id)];
+                              if (noodleInfo?.vnName) { kitchenDisplayNameVi += ` (${noodleInfo.vnName})`; }
+                              else if (item.selectedNoodle.enName) { kitchenDisplayNameVi += ` (${item.selectedNoodle.enName})`; }
+                          }
+                          if (item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && originalItemData?.customizations) {
+                              const notesVi = [];
+                              const originalOptionsGroup = originalItemData.customizations.find(c => c.type === 'ingredient_options');
+                              if (originalOptionsGroup) {
+                                  Object.values(item.selectedCustomizations).forEach(cust => {
+                                      const originalOption = originalOptionsGroup.options.find(opt => opt.id === cust.id);
+                                      if (originalOption?.name_vi) { notesVi.push(originalOption.name_vi); }
+                                      else { notesVi.push(cust.name_en); }
+                                  });
+                              }
+                              if (notesVi.length > 0) { kitchenCustomizationNoteVi = `(${notesVi.join(', ')})`; }
+                          }
+                          listItem.innerHTML = `
+                              <div class="item-name-display">
+                                  ${displayEnName}
+                                  ${customizationNoteEn ? `<span class="item-customization-note">${customizationNoteEn}</span>` : ''}
+                              </div>
+                              <div class="order-qty-controls">
+                                  <button class="order-decrease-qty" data-id="${orderItemId}" aria-label="Decrease quantity">-</button>
+                                  <span class="quantity" aria-label="Current quantity">${item.quantity}</span>
+                                  <button class="order-increase-qty" data-id="${orderItemId}" aria-label="Increase quantity">+</button>
+                              </div>
+                              <span class="item-total-price">${formatCurrency(item.price * item.quantity)}</span>
+                              <button class="remove-item" data-id="${orderItemId}" aria-label="Remove item">X</button>`;
+                          orderItemsUl.appendChild(listItem);
+                          kitchenListItem.innerHTML = `<strong>${item.quantity}</strong> x ${kitchenDisplayNameVi}
+                             ${kitchenCustomizationNoteVi ? `<span class="kitchen-customization-note">${kitchenCustomizationNoteVi}</span>` : ''}`;
+                          kitchenItemsListUl.appendChild(kitchenListItem);
+                          total += item.price * item.quantity;
+                      } else {
+                          delete currentOrder[orderItemId];
+                      }
+                  });
+                  totalCostSpan.textContent = formatCurrency(total);
+                  const isEmpty = distinctItemCount === 0;
+                  finishEatingButton.classList.toggle('hidden', isEmpty);
+                  kitchenSummaryDiv.classList.toggle('hidden', isEmpty);
+                  orderNotesContainer.classList.toggle('hidden', isEmpty);
+                  if (isEmpty) {
+                      viewOrderFloatButton.classList.add('hidden');
+                      const emptyMsg = document.createElement('li');
+                      emptyMsg.classList.add('order-empty-message');
+                      emptyMsg.textContent = 'Your order is empty';
+                      orderItemsUl.appendChild(emptyMsg);
+                      kitchenItemsListUl.innerHTML = '';
+                  } else {
+                      viewOrderFloatButton.classList.remove('hidden');
+                      viewOrderCountSpan.textContent = distinctItemCount;
+                      const existingEmptyMsg = orderItemsUl.querySelector('.order-empty-message');
+                      if (existingEmptyMsg) existingEmptyMsg.remove();
+                  }
+                  if (menuDiv) {
+                      const allMenuCards = menuDiv.querySelectorAll('.menu-item-card');
+                      allMenuCards.forEach(card => {
+                          const baseItemId = card.dataset.id;
+                          const addButton = card.querySelector('.add-to-order-button');
+                          if (addButton) {
+                              const isInOrder = Object.keys(currentOrder).some(orderKey => currentOrder[orderKey].baseId === baseItemId && currentOrder[orderKey].quantity > 0);
+                              addButton.classList.toggle('item-in-order', isInOrder);
+                              if (isInOrder) { addButton.innerHTML = `<span>In Cart ✓</span><span class="remove-from-menu" data-remove-id="${baseItemId}" title="Remove all from cart" aria-label="Remove all ${addButton.dataset.name} from cart">✖</span>`; }
+                              else { addButton.innerHTML = 'Add to Order'; }
+                          }
+                      });
+                  }
+            }
+
+            // --- Show Confirmation (No changes needed) ---
+            function showConfirmation(buttonElement) { /* ... function code remains the same ... */
+                 const parentInfo = buttonElement.closest('.menu-item-info');
+                 if (!parentInfo) return;
+                 let confirmation = parentInfo.querySelector('.add-confirmation');
+                 if (!confirmation) {
+                    confirmation = document.createElement('span');
+                    confirmation.classList.add('add-confirmation');
+                    confirmation.textContent = '✓ Added!';
+                    parentInfo.appendChild(confirmation);
+                 } else {
+                     confirmation.classList.remove('show');
+                     void confirmation.offsetWidth;
+                 }
+                 requestAnimationFrame(() => { requestAnimationFrame(() => { confirmation.classList.add('show'); }); });
+                 if (confirmation.timerId) clearTimeout(confirmation.timerId);
+                 confirmation.timerId = setTimeout(() => { confirmation.classList.remove('show'); }, 1500);
+            }
+
+            // --- Info Modal Functions (Includes latest noodle display format) ---
+            function openInfoModal(itemId) {
+                 if (!infoModal || !modalItemName || !modalItemDescription || !modalItemImage || !modalItemPrice || !modalNoodleOptionsDiv) { console.error("Info modal elements not found!"); return; }
+                 const itemData = menuData.find(item => item.id === itemId);
+                 if (itemData) {
+                     modalItemName.textContent = itemData.name;
+                     modalItemDescription.innerHTML = (itemData.description || 'No description available.').replace(/\n/g, '<br>');
+                     modalItemPrice.textContent = formatCurrency(itemData.price);
+                     modalItemImage.src = itemData.image || placeholderImageUrl;
+                     modalItemImage.alt = itemData.name;
+
+                     // --- Updated Noodle Options Display in Info Modal ---
+                     if (itemData.noodleOptions && itemData.noodleOptions.length > 0) {
+                         let noodleOptionsHTML = '<strong>Noodle Options:</strong><ul>';
+                         itemData.noodleOptions.forEach(key => {
+                             const noodleInfo = noodleTypes[key];
+                             if (noodleInfo) {
+                                 // Use format: English Name (Short Vietnamese Name)
+                                 noodleOptionsHTML += `<li>${noodleInfo.enName} (${noodleInfo.name})</li>`;
+                             }
+                         });
+                         noodleOptionsHTML += '</ul>';
+                         modalNoodleOptionsDiv.innerHTML = noodleOptionsHTML;
+                         modalNoodleOptionsDiv.classList.remove('hidden');
+                     } else {
+                         modalNoodleOptionsDiv.innerHTML = '';
+                         modalNoodleOptionsDiv.classList.add('hidden');
+                     }
+                     // --- End Update ---
+
+                     infoModal.classList.remove('hidden');
+                     requestAnimationFrame(() => {
+                         infoModal.classList.add('visible');
+                         document.body.classList.add('modal-open');
+                         if (modalItemDescription) modalItemDescription.scrollTop = 0;
+                     });
+                 } else { console.warn("Item data not found for ID:", itemId); }
+            }
+            function closeInfoModal() { // No change needed here
+                 if (!infoModal) return;
+                 infoModal.classList.remove('visible');
+                 document.body.classList.remove('modal-open');
+                 setTimeout(() => { infoModal.classList.add('hidden'); }, 300);
+             }
+
+             // --- Customization Modal Functions (No changes needed) ---
+             function openCustomizationModal(itemId, quantity, originalButton) { /* ... function code remains the same ... */
+                 if (!customizationModal || !confirmCustomizationButton || !customizationItemNameHeading || !customizationNoodleOptionsDiv || !customizationIngredientOptionsUl || !customizationNoodleSection || !customizationIngredientSection ) return;
+                 const itemData = menuData.find(item => item.id === itemId);
+                 if (!itemData) return;
+                 tempCustomizationItem = { baseItemId: itemId, baseName: itemData.name, price: itemData.price, quantity: quantity, originalButton: originalButton, noodleOptions: itemData.noodleOptions, customizations: itemData.customizations };
+                 selectedNoodleType = null;
+                 customizationItemNameHeading.textContent = `Customize: ${itemData.name}`;
+                 customizationNoodleOptionsDiv.innerHTML = '';
+                 if (itemData.noodleOptions && itemData.noodleOptions.length > 0) {
+                     itemData.noodleOptions.forEach(key => {
+                         const noodleInfo = noodleTypes[key];
+                         if (noodleInfo) {
+                             const buttonWrapper = document.createElement('div'); buttonWrapper.classList.add('noodle-option-modal');
+                             const button = document.createElement('button'); button.dataset.noodleType = key; button.textContent = `${noodleInfo.enName} (${noodleInfo.name})`;
+                             button.addEventListener('click', handleNoodleSelectionInModal); buttonWrapper.appendChild(button); customizationNoodleOptionsDiv.appendChild(buttonWrapper);
+                         }
+                     });
+                     customizationNoodleSection.classList.remove('hidden');
+                 } else { customizationNoodleSection.classList.add('hidden'); }
+                 customizationIngredientOptionsUl.innerHTML = '';
+                 const ingredientCustomizations = itemData.customizations?.find(c => c.type === 'ingredient_options');
+                 if (ingredientCustomizations && ingredientCustomizations.options.length > 0) {
+                     ingredientCustomizations.options.forEach(option => {
+                         const li = document.createElement('li'); const label = document.createElement('label'); label.classList.add('checkbox-label'); label.htmlFor = `cust-${option.id}`;
+                         const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = `cust-${option.id}`; checkbox.dataset.optionId = option.id; checkbox.checked = option.default_state;
+                         const nameEnSpan = document.createElement('span'); nameEnSpan.classList.add('option-name-en'); nameEnSpan.textContent = option.name_en;
+                         label.appendChild(checkbox); label.appendChild(nameEnSpan); li.appendChild(label); customizationIngredientOptionsUl.appendChild(li);
+                     });
+                     customizationIngredientSection.classList.remove('hidden');
+                 } else { customizationIngredientSection.classList.add('hidden'); }
+                 updateConfirmButtonState(); customizationModal.classList.remove('hidden');
+                 requestAnimationFrame(() => { customizationModal.classList.add('visible'); document.body.classList.add('modal-open'); customizationModalContent.scrollTop = 0; });
+            }
+            function handleNoodleSelectionInModal(event) { /* ... function code remains the same ... */
+                const selectedButton = event.target.closest('button'); if (!selectedButton || !selectedButton.dataset.noodleType) return;
+                const noodleTypeKey = selectedButton.dataset.noodleType;
+                customizationNoodleOptionsDiv.querySelectorAll('.noodle-option-modal button').forEach(btn => btn.classList.remove('selected'));
+                selectedButton.classList.add('selected'); selectedNoodleType = noodleTypeKey; updateConfirmButtonState();
+            }
+            function updateConfirmButtonState() { /* ... function code remains the same ... */
+                 if (!confirmCustomizationButton || !tempCustomizationItem) return;
+                 let requiredNoodleSelected = true; if (tempCustomizationItem.noodleOptions && tempCustomizationItem.noodleOptions.length > 0) { requiredNoodleSelected = !!selectedNoodleType; }
+                 confirmCustomizationButton.disabled = !requiredNoodleSelected;
+            }
+             function closeCustomizationModal() { /* ... function code remains the same ... */
+                 if (!customizationModal) return; customizationModal.classList.remove('visible'); document.body.classList.remove('modal-open');
+                 setTimeout(() => { customizationModal.classList.add('hidden'); tempCustomizationItem = null; selectedNoodleType = null; }, 300);
+             }
+
+             // --- Handle Confirmation (No changes needed) ---
+              confirmCustomizationButton?.addEventListener('click', () => { /* ... function code remains the same ... */
+                  if (!tempCustomizationItem) return; const baseItemId = tempCustomizationItem.baseItemId; const baseName = tempCustomizationItem.baseName; const price = tempCustomizationItem.price; const quantity = tempCustomizationItem.quantity; const noodleChoiceInfo = selectedNoodleType ? noodleTypes[selectedNoodleType] : null; const selectedCustomizations = {}; const customizationCheckboxes = customizationIngredientOptionsUl.querySelectorAll('input[type="checkbox"]'); const ingredientCustomizations = tempCustomizationItem.customizations?.find(c => c.type === 'ingredient_options');
+                  customizationCheckboxes.forEach(checkbox => { if (checkbox.checked) { const optionId = checkbox.dataset.optionId; const optionData = ingredientCustomizations?.options.find(opt => opt.id === optionId); if(optionData) { selectedCustomizations[optionId] = { id: optionData.id, name_en: optionData.name_en }; } } });
+                  let orderItemId = baseItemId; if (noodleChoiceInfo) orderItemId += `_${noodleChoiceInfo.id}`; Object.keys(selectedCustomizations).sort().forEach(custId => orderItemId += `_${custId}`); let specificNameEn = baseName; if (noodleChoiceInfo) { specificNameEn += ` (${noodleChoiceInfo.enName})`; }
+                  if (currentOrder[orderItemId]) { currentOrder[orderItemId].quantity += quantity; } else { currentOrder[orderItemId] = { baseId: baseItemId, name: baseName, specificName: specificNameEn, price: price, quantity: quantity, selectedNoodle: noodleChoiceInfo ? { id: noodleChoiceInfo.id, enName: noodleChoiceInfo.enName } : null, selectedCustomizations: selectedCustomizations }; }
+                  const input = tempCustomizationItem.originalButton.closest('.menu-item-card')?.querySelector('.qty-input'); if (input) input.value = 1; updateOrderSummary(); showConfirmation(tempCustomizationItem.originalButton); closeCustomizationModal();
+              });
+
+            // --- Main Event Listener (No changes needed) ---
+            document.body.addEventListener('click', (event) => { /* ... function code remains the same ... */
+                const target = event.target; const infoButton = target.closest('.info-icon'); if (infoButton) { const infoItemId = infoButton.dataset.id; if (infoItemId) openInfoModal(infoItemId); return; }
+                if (target === infoModalCloseButton || (target.classList.contains('modal-overlay') && target.id === 'info-modal' && !infoModalContent?.contains(target))) { closeInfoModal(); return; }
+                if (target === customizationModalCloseButton || (target.classList.contains('modal-overlay') && target.id === 'customization-modal' && !customizationModalContent?.contains(target))) { closeCustomizationModal(); return; }
+                if (target.matches('.remove-from-menu')) { const baseItemIdToRemove = target.dataset.removeId; if (baseItemIdToRemove) { Object.keys(currentOrder).forEach(orderKey => { if (currentOrder[orderKey].baseId === baseItemIdToRemove) delete currentOrder[orderKey]; }); updateOrderSummary(); const card = target.closest('.menu-item-card'); const input = card?.querySelector('.qty-input'); if(input) input.value = 1; } return; }
+                const card = target.closest('.menu-item-card'); if (card) { const itemId = card.dataset.id; const input = card.querySelector(`.qty-input[data-id="${itemId}"]`); let currentVal = input ? parseInt(input.value) : 1; if (isNaN(currentVal) || currentVal < 1) currentVal = 1; if (target.classList.contains('qty-decrease')) { if (currentVal > 1 && input) input.value = currentVal - 1; } else if (target.classList.contains('qty-increase')) { if (input) input.value = currentVal + 1; } else if (target.classList.contains('add-to-order-button') && !target.classList.contains('item-in-order')) { const quantityToAdd = input ? parseInt(input.value) : 1; const itemData = menuData.find(item => item.id === itemId); if (itemData && quantityToAdd > 0) { const needsNoodleChoice = itemData.noodleOptions && itemData.noodleOptions.length > 0; const hasCustomizations = itemData.customizations && itemData.customizations.some(c => c.options?.length > 0); if (needsNoodleChoice || hasCustomizations) { openCustomizationModal(itemId, quantityToAdd, target); } else { const price = itemData.price; if (!isNaN(price)) { const orderItemId = itemId; if (currentOrder[orderItemId]) { currentOrder[orderItemId].quantity += quantityToAdd; } else { currentOrder[orderItemId] = { baseId: itemId, name: itemData.name, specificName: itemData.name, price: price, quantity: quantityToAdd, selectedNoodle: null, selectedCustomizations: {} }; } if (input) input.value = 1; updateOrderSummary(); showConfirmation(target); } } } } return; }
+                const orderItemLi = target.closest('#order-items li'); if (orderItemLi && !orderItemLi.classList.contains('order-empty-message')) { const orderItemId = target.closest('[data-id]')?.dataset.id; if (!orderItemId || !currentOrder[orderItemId]) return; if (target.classList.contains('order-decrease-qty')) { currentOrder[orderItemId].quantity--; if (currentOrder[orderItemId].quantity <= 0) delete currentOrder[orderItemId]; updateOrderSummary(); } else if (target.classList.contains('order-increase-qty')) { currentOrder[orderItemId].quantity++; updateOrderSummary(); } else if (target.classList.contains('remove-item')) { delete currentOrder[orderItemId]; updateOrderSummary(); } return; }
+                if (target.id === 'finish-eating') handleFinishEating(); else if (target.id === 'new-order') handleNewOrder();
+            });
+
+            // --- Other Listeners & Functions (No changes needed) ---
+            if (viewOrderFloatButton && orderSection) { viewOrderFloatButton.addEventListener('click', () => { orderSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); } else { /* Error handling */ }
+            document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (customizationModal && customizationModal.classList.contains('visible')) closeCustomizationModal(); else if (infoModal && infoModal.classList.contains('visible')) closeInfoModal(); } });
+            document.body.addEventListener('change', (event) => { if (event.target.classList.contains('qty-input')) { let value = parseInt(event.target.value); if (isNaN(value) || value < 1) event.target.value = 1; } });
+            function handleFinishEating() { /* ... function code remains the same ... */
+                 if (!menuSection || !orderSection || !finalBillDiv || !billItemsUl || !billTotalSpan || !viewOrderFloatButton) return; menuSection.classList.add('hidden'); orderSection.classList.add('hidden'); finalBillDiv.classList.remove('hidden'); viewOrderFloatButton.classList.add('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); billItemsUl.innerHTML = ''; let billTotal = 0; const sortedItemIds = Object.keys(currentOrder).sort();
+                 sortedItemIds.forEach(orderItemId => { const item = currentOrder[orderItemId]; if (item.quantity > 0) { const billListItem = document.createElement('li'); let billDisplayName = item.specificName || item.name; let billCustomizationNote = ''; if (item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0) { const notes = Object.values(item.selectedCustomizations).map(cust => cust.name_en); billCustomizationNote = ` (${notes.join(', ')})`; } billDisplayName += billCustomizationNote; billListItem.innerHTML = `<span>${item.quantity} x ${billDisplayName}</span><span>${formatCurrency(item.price * item.quantity)}</span>`; billItemsUl.appendChild(billListItem); billTotal += item.price * item.quantity; } });
+                 if(billTotalSpan) billTotalSpan.textContent = formatCurrency(billTotal);
+            }
+             function handleNewOrder() { /* ... function code remains the same ... */
+                 if (!finalBillDiv || !menuSection || !orderSection) return; currentOrder = {}; finalBillDiv.classList.add('hidden'); menuSection.classList.remove('hidden'); orderSection.classList.remove('hidden'); const qtyInputs = document.querySelectorAll('.qty-input'); if (qtyInputs.length > 0) qtyInputs.forEach(input => input.value = 1); if(orderNotesTextarea) orderNotesTextarea.value = ''; updateOrderSummary(); window.scrollTo({ top: 0, behavior: 'smooth' });
+             }
+             function initializeApp() { /* ... function code remains the same ... */
+                 const essentialElements = [menuDiv, orderItemsUl, totalCostSpan, finishEatingButton, finalBillDiv, billItemsUl, billTotalSpan, newOrderButton, menuSection, orderSection, kitchenSummaryDiv, kitchenItemsListUl, orderNotesContainer, orderNotesTextarea, infoModal, modalItemName, modalItemDescription, modalItemImage, modalItemPrice, modalNoodleOptionsDiv, infoModalCloseButton, customizationModal, customizationModalCloseButton, customizationNoodleOptionsDiv, customizationIngredientOptionsUl, confirmCustomizationButton, viewOrderFloatButton, viewOrderCountSpan]; let allElementsExist = true; for (const el of essentialElements) { if (!el) { console.error("Initialization failed: An essential element is missing.", el); allElementsExist = false; break; } }
+                 if (allElementsExist) { try { displayMenu(); updateOrderSummary(); } catch (error) { console.error("Error during initialization:", error); document.body.innerHTML = '<p style="color: red; font-weight: bold; padding: 20px;">Error initializing app.</p>'; } } else { document.body.innerHTML = '<p style="color: red; font-weight: bold; padding: 20px;">Initialization failed: Missing HTML elements.</p>'; }
+             }
+             initializeApp();
         });
     </script>
 </body>
